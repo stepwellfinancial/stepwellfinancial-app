@@ -1,0 +1,11 @@
+# Once a week Dependabot opens a pull request when a pinned action in
+# .github/workflows/pages.yml has a newer release. The pull request is a notice
+# only and is not merged on GitHub: the new version is checked first, then
+# committed and pushed here as an ordinary commit (the deploy runbook,
+# "Action versions").
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

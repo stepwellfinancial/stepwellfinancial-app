@@ -1,0 +1,40 @@
+/* Learn and its lessons. */
+
+.screen-learn { display: grid; gap: 16px; }
+.screen-learn .screen-head { margin-bottom: 0; }
+.ln-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.ln-col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+@media (max-width: 1099px) { .ln-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .screen-learn, .ln-grid, .ln-col { gap: 12px; } }
+
+.ln-p { font-size: 16px; line-height: 1.6; max-width: 68ch; }
+.ln-putaway:focus { outline: none; }
+.ln-putaway:focus-visible { outline: 2px solid var(--focus); }
+
+/* From your data: a plain fact and the lesson's name, nothing more. */
+.ln-from { display: grid; gap: 10px; }
+.ln-offers { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ln-offer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding: 12px 14px; border-radius: var(--r-s); background: var(--panel-2); border: 1px solid var(--glass-edge); }
+.ln-fact { flex: 1 1 280px; }
+.ln-why { color: var(--muted); }
+
+/* The lessons that exist */
+.ln-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; }
+.ln-item { display: grid; gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.ln-item:last-child { border-bottom: 0; }
+.ln-item-t { font-weight: 600; font-size: var(--t-m); line-height: 1.4; justify-self: start; }
+
+/* Myth check and glossary */
+.ln-myth-q { font-size: var(--t-m); line-height: 1.45; margin: 2px 0 8px; }
+.ln-gloss { margin: 8px 0 0; display: grid; gap: 4px; }
+.ln-gloss dt { font-weight: 700; font-size: var(--t-s); margin-top: 6px; }
+.ln-gloss dd { margin: 0; font-size: 16px; line-height: 1.6; }
+
+/* One lesson */
+.ln-lesson { display: grid; gap: 10px; max-width: 760px; padding: 22px; }
+.ln-lesson h2 { font-size: var(--t-m); margin: 10px 0 0; }
+.ln-lesson h2:first-child { margin-top: 0; }
+.ln-factors { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 16px; line-height: 1.6; }
+.ln-back { font-size: var(--t-s); margin-top: 6px; }
+@media (max-width: 639px) { .ln-lesson { padding: 16px; } }

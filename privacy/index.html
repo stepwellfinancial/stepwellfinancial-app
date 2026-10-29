@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; worker-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Privacy | Stepwell Financial</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../" aria-label="Stepwell Financial, back to the app">
+    <span class="wordmark">Stepwell Financial</span>
+    <span class="descriptor">Wealth monitoring and education</span>
+  </a>
+  <div class="top-actions"><a class="btn small quiet" href="../">Back to the app</a></div>
+</header>
+
+<main id="main" class="main legal-main" tabindex="-1">
+<article class="card legal">
+<!-- HARPER TEXT: privacy (Legal Ops, final Phase 1 text of 2026-10-29, word for word; do not edit here) -->
+<h1>Privacy</h1>
+
+<h2>The short version</h2>
+
+<p>The Stepwell Financial app works only on your device. The numbers you enter, import or save stay in this browser, on this device, unless you export them or make a backup. We don't receive them and we can't see them. (See "Where the app's files come from" for the one limit on this.)</p>
+
+<p>The app has no analytics and no visitor counting. It loads nothing from other websites. It has no accounts, no servers that store your data, no bank links and no payments, and it sends nothing to an AI service.</p>
+
+<p>The app doesn't encrypt your saved data unless you turn on the passphrase lock. Anyone who can use this browser on this device can see it. Clearing your browser's data deletes it. Backups are up to you.</p>
+
+<h2>Who we are</h2>
+
+<p>Stepwell Financial runs this app.</p>
+
+<p>To ask about this page, email hello@stepwellfinancial.com. We're not accepting email yet. This note comes out when we are.</p>
+
+<h2>Your data on this device</h2>
+
+<h3>What the app saves, and where</h3>
+
+<p>The app saves what you enter or import: for example amounts, dates, payee names, notes, category names and the name you ask the app to call you. It saves them in your browser's own storage (the browser calls it "IndexedDB"), in the browser profile you are using, on the device you are using.</p>
+
+<p>If you choose to give the app a name to call you ("What should we call you?"), it saves that name in the same browser storage as your other data. It is blank unless you fill it in. The app shows it at the top of the screen, so anyone who can use this browser profile on this device can see it, unless the passphrase lock is on and the app is locked, or "Hide amounts" is on. Like the rest of your data, it is encrypted when the lock is on. The name is included in backups and is removed by "Delete all". You can change or clear it in Settings. The app doesn't send it to us.</p>
+
+<p>If you choose "Look around with sample data", the app writes made-up sample records into the same browser storage. They stay there until you choose "Remove sample data" (in the bar at the top of the app, or in Settings) or "Delete all". They are included if you export or make a backup while they are there.</p>
+
+<p>A browser profile is the set of saved data that one browser keeps for one user on one device. If several people use the same profile, they share what the app saved.</p>
+
+<p>Apart from files you choose to export or back up, the app keeps no copy of your data anywhere else on your device. It doesn't put your data in the web address or in the page title. The app sets no cookies, and it uses no localStorage or sessionStorage. Its settings (for example the theme, how often you are paid, which lessons you picked, whether the lock is on, how soon it locks, and the lock's salt, a random value the lock uses) are saved in the same browser storage as your data. The lock does not encrypt the settings.</p>
+
+<p>If your browser won't let the app save, the app tells you, and what you enter stays only until you close or reload the page.</p>
+
+<h3>We can't see it</h3>
+
+<p>The app doesn't send your data to us or to anyone else. There is no server that stores it. We can't see it, read it, recover it or delete it for you.</p>
+
+<p>The app's pages carry a browser rule that lets them load only the app's own files, from our host, and stops the page's code from sending or fetching data over the network. The part of the app that reads files you import has no code that sends anything. This was checked before launch. Links you choose to follow open other sites as usual. If you want to see the rule, it is in the page source.</p>
+
+<h3>Who can see it</h3>
+
+<p>If the passphrase lock is off, anyone who can use this browser profile on this device can open the app and see your data. The app has no sign-in.</p>
+
+<ul>
+<li>Your browser doesn't encrypt this storage, beyond your device's own disk encryption if that is turned on.</li>
+<li>Lock your device when you step away.</li>
+<li>The passphrase lock (below) is a second layer. It is off unless you turn it on.</li>
+<li>Your data doesn't move to your other devices or other browsers. Each browser profile has its own copy.</li>
+</ul>
+
+<h3>Keeping it</h3>
+
+<p>We ask your browser to keep the app's data and not clear it when the device is short of space. The browser decides. It can refuse.</p>
+
+<p>Clearing your browser's data for this site deletes everything the app saved. Doing that is permanent, and we can't undo it. If you have your own data and haven't made a backup in the last 30 days, or ever, the app shows a reminder at the top of Settings. You can snooze it for 7 days.</p>
+
+<p>In a private window, your browser deletes what the app saved when you close the window.</p>
+
+<h3>Importing a file</h3>
+
+<p>You can import a CSV, OFX or QFX file (the kinds of file many banks let you download). The app reads the file on your device. The file is not uploaded.</p>
+
+<ul>
+<li>The app refuses a file over 5 MB, over 50,000 lines, or with a value over 500 characters, and tells you why. It accepts UTF-8 text, or the encoding the format states.</li>
+<li>If a date or amount can't be read, the app shows that row as an error. It doesn't guess.</li>
+<li>Before anything is saved, you see a preview. You can undo a whole import afterward.</li>
+</ul>
+
+<h3>Exporting your data</h3>
+
+<p>You can export your transactions as a CSV file. The file goes to your device's downloads. A CSV file is plain text, so anyone who can open the file can read it. For a copy of everything, make a backup (below).</p>
+
+<p>If a cell in your data starts with <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, a tab or a carriage return, the app adds an apostrophe in front of it in the file. This is so a spreadsheet shows the cell as text and doesn't run it as a formula.</p>
+
+<h3>Backups and restore</h3>
+
+<p>A backup is a file that holds all your data. It is the way to keep a copy, or to move your data to another browser or device.</p>
+
+<ul>
+<li><strong>Encrypted backup.</strong> The app offers this first. The file is encrypted with a passphrase you choose, so it is not readable without the passphrase. Backup files tend to end up in your Downloads folder and in cloud drives that copy it, so the encrypted choice is the better one for most people. You type the backup passphrase for each backup file. It is separate from the lock passphrase. If you lose it, nobody can open that file, including us.</li>
+<li><strong>Backup without a passphrase.</strong> The app allows it, with a warning. It is a plain file, like a CSV export: anyone who gets it can read your data.</li>
+<li><strong>Restore.</strong> The app checks the file, then shows you what will change (counts). It replaces your data only after you confirm. It never merges silently. If a restore fails, your existing data is left as it was.</li>
+</ul>
+
+<p>We don't keep your backups. They are files on your device. If you lose one, or lose its passphrase, we can't give it back.</p>
+
+<h3>Delete all</h3>
+
+<p>"Delete all" removes everything the app saved in this browser on this device. To use it, you type a word to confirm. Afterward, the app checks whether your browser still lists any of the app's storage and tells you what it found. Your browser may keep traces in its own files until it tidies them up.</p>
+
+<p>"Delete all" doesn't delete files you saved outside the app, such as exported CSV files and backups. Delete those yourself.</p>
+
+<h3>What the web host sees</h3>
+
+<p>Opening the app means your browser asks a web host for the app's files.</p>
+
+<p>The app is hosted on GitHub Pages. GitHub logs visitors' IP addresses for security purposes. GitHub's documentation says: "When a GitHub Pages site is visited, the visitor's IP address is logged and stored for security purposes, regardless of whether the visitor has signed into GitHub or not." You can read GitHub's own pages here: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages" rel="noopener noreferrer">About GitHub Pages</a> and the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener noreferrer">GitHub General Privacy Statement</a>.</p>
+
+<p>This is about visiting the app. It is not your saved data. GitHub never receives your saved data, because the app doesn't send it anywhere.</p>
+
+<p>An IP address is the number that identifies the internet connection your device is using.</p>
+
+<h3>Where the app's files come from</h3>
+
+<p>Each time you open the app, your browser downloads the app's program from our host. If someone took control of our hosting or publishing accounts, they could publish changed code. We keep the app's code to what it needs, with no outside scripts, services or libraries loaded from other places.</p>
+
+<h2>The passphrase lock (optional, off by default)</h2>
+
+<p>The passphrase lock encrypts your saved data on this device with a passphrase you choose. You can turn it on in the app. It is off until you do.</p>
+
+<p><strong>What it does</strong></p>
+
+<ul>
+<li>It encrypts every record of your data that the app saves. A few things stay readable so the lock can work: your settings (for example your theme, how often you are paid, which lessons you picked, whether the lock is on, how soon it locks, and the date of your last backup), the lock's random salt and strength setting, each record's random value (IV) and random ID, and how many records there are and roughly how big they are. None of these show your amounts, names or notes.</li>
+<li>Your passphrase is turned into an encryption key each time you unlock the app. The key is kept in your browser's memory only. It is never written to storage, and the browser is asked not to let the app read it back out.</li>
+<li>The passphrase has to be at least 12 characters. The app shows a strength hint. It has no "password hint" field, because a hint stored beside your data would weaken the lock.</li>
+<li>By default, the app locks again after 15 minutes of inactivity. You can choose 5, 15, 30 or 60 minutes. It also locks when you close the tab.</li>
+<li>If you change the passphrase, the app encrypts everything again with the new one, and the old one stops working. If you turn the lock off, the app saves your data without encryption.</li>
+</ul>
+
+<p><strong>What it doesn't do</strong></p>
+
+<ul>
+<li><strong>A lost passphrase can't be recovered by anyone, including us.</strong> We don't have it and have no way to reset it. Your data is then gone, unless you have a backup you can open. Before you turn the lock on, the app says this and offers an encrypted backup first.</li>
+<li>While the app is unlocked, anyone using your open browser can see your data. The lock helps when the app is closed or locked.</li>
+<li>It doesn't hide the fact that the app has saved data on this device.</li>
+</ul>
+
+<p><em>Short note for the curious:</em> the lock uses the encryption your browser provides (AES-GCM), with a key made from your passphrase by a slow method (PBKDF2 with SHA-256, at least 600,000 rounds), a random salt and a fresh random value each time a record is saved.</p>
+
+<h2>Accounts</h2>
+
+<p>The Stepwell Financial app has no accounts yet. We will update this page before we add them.</p>
+
+<h2>If you email us</h2>
+
+<p>Our email address is hello@stepwellfinancial.com. We're not accepting email yet. This note comes out when we are. Until then, this section describes how we will handle email once we do.</p>
+
+<p><strong>What we receive.</strong> Your email address, your name if your email shows it, your message, anything you attach, and the details every email carries, such as the date it was sent.</p>
+
+<p><strong>What we use it for.</strong> Only to reply to you and to fix the page you wrote about. We don't add you to a mailing list, and we don't sell or share your email for marketing.</p>
+
+<p><strong>Why we're allowed to use it.</strong> We use your email because we have a legitimate interest in answering messages and correcting our pages, and you chose to write to us.</p>
+
+<p><strong>Who handles it.</strong> Email is handled by Google Workspace. Google stores and processes our email for us, under its agreement with us. Google may store it in the United States or other countries. Google's <a href="https://cloud.google.com/terms/data-processing-addendum" rel="noopener noreferrer">data processing terms</a> for Google Workspace include terms for transfers of personal data from the EU and UK. We don't give your email to anyone else unless the law requires it.</p>
+
+<p><strong>How long we keep it.</strong> We have no rule that deletes emails after a set time. Every three months we go through our mailbox and delete the emails we no longer need to reply to you or to fix a page, unless we need to keep one longer, for example to resolve a dispute or meet a legal requirement. If Google's spam filter catches your email, we may not see it.</p>
+
+<p><strong>Your choices.</strong> You can ask us for a copy of the emails we hold from you, to correct them, or to delete them. Email hello@stepwellfinancial.com from the same address, and we answer within one month. Writing to us is up to you, and we make no automated decisions about you.</p>
+
+<p><strong>If you're in the EU or UK.</strong> You also have the right to object to how we use your email, to ask us to restrict it, and to complain to your data protection authority. In the UK that's the Information Commissioner's Office (ICO).</p>
+
+<h2>Children</h2>
+
+<p>The app is for people who are 18 or older and live in the United States. The app has no account, no sign-up and no age question. Nothing you enter is sent to us. We can't tell who uses a browser profile, so we can't tell their age. What the app saves stays in that browser profile.</p>
+
+<h2>Changes to this page</h2>
+
+<p>We will update this page before we add analytics, ads, forms that send information to us, accounts, a server that stores your data, or any other data collection. When we change it, we change the date below.</p>
+
+<h2>Education, not advice</h2>
+
+<p>The Stepwell Financial app gives education and tools, not personal advice. It shows how numbers add up. It does not give financial advice, and nothing in the app is a personal suggestion about your money.</p>
+
+<p><strong>Last updated:</strong> October 29, 2026</p>
+<!-- END HARPER TEXT: privacy -->
+</article>
+
+<footer class="foot">
+  <span>Money education and free tools. Not financial advice.</span>
+  <span>For education only, not financial advice.</span>
+  <nav class="foot-links" aria-label="Legal"><a href="./" aria-current="page">Privacy</a><a href="../terms/">Terms</a></nav>
+</footer>
+</main>
+</body>
+</html>

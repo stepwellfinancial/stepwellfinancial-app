@@ -1,0 +1,74 @@
+/* Onboarding and the dashboard states. */
+
+.screen-onboarding { display: grid; gap: 16px; }
+.screen-onboarding .screen-head { margin-bottom: 0; }
+.ob-stage { display: grid; justify-items: center; }
+.ob-stage > * { width: 100%; max-width: 640px; }
+
+.ob-card { display: grid; gap: 16px; padding: 24px; }
+@media (max-width: 639px) { .ob-card { padding: 16px; gap: 14px; } }
+.ob-lead { font-size: 16px; line-height: 1.6; max-width: 60ch; }
+.ob-well { font-size: 16px; line-height: 1.6; }
+.ob-h2 { font-size: var(--t-m); margin: 4px 0 0; }
+.ob-fact { display: grid; gap: 10px; justify-items: start; padding: 14px 16px; border: 1px solid var(--glass-edge); border-radius: var(--r-m); background: var(--panel); }
+
+/* Progress: "1 of 4" plus quiet bars. Ledger marks a step done or current (A-I4, 1.2.0). */
+.ob-progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ob-count { font-size: var(--t-xs); line-height: 1.3; color: var(--muted); font-weight: 600; }
+.ob-dots { display: flex; gap: 6px; }
+.ob-dots i { display: block; width: 24px; height: 4px; border-radius: 4px; background: var(--line); border: 1px solid var(--glass-edge); }
+.ob-dots i.on { background: var(--ledger); border-color: var(--ledger); }
+
+/* Buttons and links */
+.ob-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ob-actions .btn { flex: 1 1 auto; }
+.ob-actions .btn.quiet, .ob-actions .btn.small { flex: 0 1 auto; }
+.ob-ways { display: grid; gap: 10px; }
+.ob-more { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: var(--t-s); }
+.ob-skip { font-size: var(--t-s); text-align: center; }
+.ob-skip a { display: inline-block; padding: 8px 4px; min-height: 36px; }
+.ob-msg { font-size: 16px; line-height: 1.6; color: var(--ink); }
+.ob-msg:empty { display: none; }
+.ob-strength { font-size: var(--t-m); line-height: 1.6; color: var(--ink); }
+.ob-strength:empty { display: none; }
+
+/* The lock offer and the first-account form */
+.ob-lock, .ob-form { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--glass-edge); border-radius: var(--r-s); background: var(--panel-2); }
+.ob-warn { border: 2px solid var(--ink); border-radius: var(--r-s); padding: 12px 14px; display: grid; gap: 8px; background: var(--panel); }
+.ob-warn:focus { outline: none; }
+.ob-warn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Topic pills (checkboxes) */
+.ob-topics { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-pill-wrap { display: inline-flex; position: relative; }
+.ob-pill { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border-radius: 999px;
+  border: 1.5px solid var(--muted); background: var(--panel); color: var(--ink); font-size: var(--t-s); line-height: 1.25; cursor: pointer; }
+.ob-pill::before { content: ""; width: 13px; height: 13px; border-radius: 3px; border: 1.5px solid var(--muted); flex: none; box-sizing: border-box; }
+.ob-check:checked + .ob-pill { border-color: var(--ledger); background: var(--ledger-tint); font-weight: 700; }
+.ob-check:checked + .ob-pill::before { border-color: var(--ledger); background: var(--ledger); box-shadow: inset 0 0 0 2px var(--panel); }
+.ob-check:focus-visible + .ob-pill { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: var(--glow-ledger); }
+
+/* States */
+.ob-center { justify-items: center; text-align: center; }
+.ob-center .ob-actions { justify-content: center; width: 100%; max-width: 320px; }
+.ob-card .ob-state-h { font-size: var(--t-l); margin: 0; }
+.ob-error .ob-actions .btn { flex: 0 0 auto; }
+.ob-empty-art { display: block; }
+.ob-art-base { stroke: var(--line); stroke-width: 2; fill: none; }
+.ob-art-line { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 4 5; }
+.ob-error { border-color: var(--ink); }
+.ob-loading { display: grid; gap: 12px; }
+.ob-sk-a { height: 13px; width: 40%; margin-top: 4px; }
+.ob-sk-b { height: 40px; width: 70%; margin-top: 12px; }
+.ob-sk-c { height: 160px; margin-top: 16px; }
+.ob-sk-d { height: 13px; width: 60%; }
+.ob-sk-e { height: 13px; width: 85%; margin-top: 12px; }
+.ob-loading-msg { font-size: var(--t-s); color: var(--ink); padding: 12px 18px; }
+
+/* Switcher (prototype builds) */
+.ob-nav h2 { font-size: var(--t-m); margin: 0 0 10px; }
+.ob-switch { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-switch a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--glass-edge); background: var(--panel-2); color: var(--ink); font-size: var(--t-s); line-height: 1.2; text-decoration: none; }
+.ob-switch a:hover { border-color: var(--muted); }
+.ob-switch a[aria-current="page"] { background: var(--ledger-tint); border-color: var(--ledger); font-weight: 700; }

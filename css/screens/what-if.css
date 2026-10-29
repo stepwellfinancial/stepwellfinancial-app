@@ -1,0 +1,41 @@
+/* What if screen layout. Loaded by the router on first visit. */
+
+.wi-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.wi-col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+@media (max-width: 1100px) {
+  .wi-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 639px) { .wi-grid, .wi-col { gap: 12px; } }
+
+/* Chart */
+.wi-chart { margin-top: 6px; }
+.wi-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.wi-line.wi-main { stroke-width: 3; }
+.wi-dashed { stroke-dasharray: 6 5; stroke-width: 2; }
+.wi-contrib { stroke: var(--contrib); }
+.wi-area { opacity: .45; }
+.wi-legend { margin-top: 8px; }
+.sw.wi-sw-main { width: 16px; height: 3px; border-radius: 2px; background: var(--ledger); }
+.sw.wi-sw-contrib { width: 16px; height: 0; border-radius: 0; border-top: 2px dashed var(--contrib); }
+.sw.wi-sw-ink { width: 16px; height: 0; border-radius: 0; border-top: 2px dashed var(--ink); }
+.sw.wi-sw-card, .sw.wi-sw-loan { width: 14px; height: 12px; border-radius: 2px; }
+
+/* Result */
+.wi-big { font-size: 36px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 2px 0 10px; font-variant-numeric: tabular-nums; }
+.wi-big-sub { font-size: var(--t-m); font-weight: 600; letter-spacing: 0; color: var(--muted); }
+.wi-big-sub .money { color: var(--ink); }
+.wi-sentence { font-size: var(--t-s); line-height: 1.55; max-width: 62ch; }
+.wi-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 10px; }
+.wi-with { margin-top: 10px; display: grid; gap: 4px; }
+.wi-with-h { font-size: var(--t-m); line-height: 1.4; }
+.wi-sentence { font-size: 16px; line-height: 1.6; }
+@media (max-width: 639px) { .wi-big { font-size: 30px; } }
+
+/* Inputs */
+.wi-fields { display: grid; gap: 18px; }
+.wi-field { gap: 2px; }
+.wi-lab { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.wi-lab label { font-weight: 600; }
+.wi-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+.wi-field input[type=range] { min-height: 32px; margin: 0; cursor: pointer; }
+.wi-range { display: flex; justify-content: space-between; gap: 12px; font-size: var(--t-xs); line-height: 1.3; color: var(--muted); font-variant-numeric: tabular-nums; }

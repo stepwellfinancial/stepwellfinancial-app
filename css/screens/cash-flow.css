@@ -1,0 +1,79 @@
+/* Cash flow screen layout. */
+
+.cf-body { font-size: var(--t-m); line-height: 1.6; }
+.cf-empty { max-width: 760px; display: grid; gap: 12px; padding: 24px; }
+.cf-empty h2 { font-size: var(--t-l); margin: 0; }
+.cf-month { margin-bottom: 16px; padding: 12px 18px; max-width: 360px; }
+.cf-apart { margin-top: 10px; }
+@media (max-width: 639px) { .cf-month { margin-bottom: 12px; max-width: none; } }
+
+.cf-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 16px; align-items: start; }
+@media (max-width: 1279px) { .cf-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .cf-grid { gap: 12px; } }
+
+/* In, out and not spent */
+.cf-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 1280px) { .cf-stats { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 559px) { .cf-stats { grid-template-columns: minmax(0, 1fr); } }
+.cf-stat { display: grid; gap: 4px; justify-items: start; align-content: start; padding: 12px; border-radius: var(--r-s); background: var(--panel-2); }
+.cf-num { font-size: var(--t-xl); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.cf-stat .explain { margin-top: 4px; }
+.cf-words { margin-top: 12px; }
+.cf-name { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.cf-share { margin-top: 12px; display: grid; gap: 8px; }
+.cf-share h3 { font-size: var(--t-s); margin: 0; }
+.cf-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.cf-status:empty { display: none; }
+.cf-status { color: var(--ink); }
+.cf-lines { list-style: none; margin: 0; padding: 0; }
+
+/* Swatches: five slots (four cat- tokens and muted), one colour per group,
+   the name always in text beside it. "Not spent" is not a category: an outline only. */
+.cf-sw { width: 12px; height: 12px; }
+.cf-bg-property { background: var(--cat-property); } .cf-bg-cash { background: var(--cat-cash); }
+.cf-bg-invest { background: var(--cat-invest); } .cf-bg-other { background: var(--cat-other); }
+.cf-bg-muted { background: var(--muted); }
+.cf-bg-none { background: transparent; border: 1.5px solid var(--ink); }
+
+/* The flows */
+.cf-shared { display: none; margin-bottom: 8px; font-size: var(--t-m); line-height: 1.6; padding: 8px 12px; border-radius: var(--r-s);
+  background: var(--panel-2); border: 1px dashed var(--muted); }
+.hide-amounts .cf-shared { display: block; }
+.cf-chart { min-height: 440px; margin-top: 6px; }
+.cf-svg { touch-action: auto; }
+.cf-lbl-in { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.cf-lbl-amt { font-weight: 400; fill: var(--muted); }
+.cf-lbl { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.cf-lbl2 { font-size: 13px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.cf-leader { fill: none; stroke: var(--muted); stroke-width: 1; }
+.cf-in { opacity: .85; }
+.cf-band { opacity: .3; cursor: pointer; transition: opacity var(--dur) var(--ease); }
+.cf-f-property { fill: var(--cat-property); } .cf-f-cash { fill: var(--cat-cash); } .cf-f-invest { fill: var(--cat-invest); }
+.cf-f-other { fill: var(--cat-other); } .cf-f-muted { fill: var(--muted); }
+/* Not spent: an unfilled band with an ink outline */
+.cf-band.cf-f-none { fill: none; opacity: 1; stroke: var(--ink); stroke-width: 1.5; }
+.cf-node { cursor: pointer; }
+.cf-n-property { fill: var(--cat-property); } .cf-n-cash { fill: var(--cat-cash); } .cf-n-invest { fill: var(--cat-invest); }
+.cf-n-other { fill: var(--cat-other); } .cf-n-muted { fill: var(--muted); }
+.cf-n-none { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.has-sel .cf-band { opacity: .1; }
+.has-sel .cf-band.on { opacity: .55; }
+.has-sel .cf-band.cf-f-none { opacity: .35; }
+.has-sel .cf-band.cf-f-none.on { opacity: 1; stroke-width: 2.5; }
+.cf-hint { margin: 6px 0 4px; }
+
+.cf-list { list-style: none; margin: 0; padding: 0; }
+.cf-item { border-bottom: 1px solid var(--line); }
+.cf-item:last-child { border-bottom: 0; }
+.cf-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 44px;
+  padding: 8px 6px; background: none; border: 0; border-radius: var(--r-s); color: var(--ink); font: 600 var(--t-s)/1.35 var(--font);
+  text-align: left; cursor: pointer; }
+.cf-row:hover { background: var(--panel-2); }
+.cf-row[aria-expanded="true"] { background: var(--ledger-tint); }
+.cf-val { display: inline-flex; gap: 12px; align-items: baseline; font-variant-numeric: tabular-nums; }
+.cf-pct { min-width: 4.2em; text-align: right; font-weight: 400; color: var(--muted); font-size: var(--t-xs); }
+.cf-panel { margin: 4px 0 10px; }
+.cf-panel h4.cf-sub { display: flex; justify-content: space-between; gap: 10px; font-size: var(--t-xs); margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+.cf-panel p + p { margin-top: 6px; }
+.cf-total { margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .cf-band { transition: none; } }

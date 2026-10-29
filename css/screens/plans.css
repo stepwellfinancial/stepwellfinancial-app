@@ -1,0 +1,14 @@
+/* Plans: the free plan only. */
+
+.screen-plans { display: grid; gap: 16px; }
+.screen-plans .screen-head { margin-bottom: 0; }
+.pl-card { display: grid; align-content: start; gap: 6px; padding: 22px; max-width: 640px; }
+@media (max-width: 639px) { .pl-card { padding: 16px; } .screen-plans { gap: 12px; } }
+/* The outline is ink, with no ledger and no tint (brand 1.2.0, MF-3). */
+.pl-free { border: 1.5px solid var(--ink); }
+.pl-card h2 { font-size: var(--t-l); margin: 0; }
+.pl-price { font-size: var(--t-xl); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; margin: 4px 0 8px; }
+.pl-sub { font-size: var(--t-xs); line-height: 1.3; font-weight: 700; color: var(--muted); margin: 8px 0 2px; letter-spacing: .02em; }
+.pl-list { margin: 0; padding: 0 0 0 18px; font-size: 16px; line-height: 1.6; display: grid; gap: 4px; }
+.pl-both { max-width: 640px; }
+.pl-p { font-size: 16px; line-height: 1.6; }

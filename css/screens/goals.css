@@ -1,0 +1,34 @@
+/* Goals screen layout. Form fields use the shared form kit styles (fk-*) in app.css. */
+
+.go-note:not(:empty) { margin-bottom: 12px; }
+.go-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 16px; }
+.go-count { font-size: var(--t-s); line-height: 1.4; }
+.go-read { font-size: 16px; line-height: 1.6; }
+.go-read + .go-read { margin-top: 8px; }
+.go-empty, .go-formcard { margin-bottom: 16px; }
+
+.go-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.go-wide { grid-column: 1 / -1; }
+@media (max-width: 767px) { .go-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; } .go-bar, .go-empty, .go-formcard { margin-bottom: 12px; } }
+
+.go-card { display: grid; gap: 8px; align-content: start; }
+.go-card .card-h { margin-bottom: 0; }
+.go-amt { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.go-of { font-size: var(--t-s); font-weight: 400; letter-spacing: 0; color: var(--muted); white-space: nowrap; }
+.go-meter { height: 10px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--glass-edge); overflow: hidden; }
+.go-meter > span { display: block; height: 100%; border-radius: 999px; background: var(--ledger); box-shadow: 0 0 12px var(--ledger); }
+.go-line { font-size: 16px; line-height: 1.6; }
+.go-cover { font-weight: 600; }
+.go-illus { display: grid; gap: 6px; }
+.go-ill-h { font-size: var(--t-xs); font-weight: 700; color: var(--muted); }
+.go-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.go-foot a { font-size: var(--t-xs); line-height: 1.3; }
+.go-basis { max-width: 320px; }
+.go-btns { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }
+.go-card .note { margin-top: 2px; }
+
+/* New goal, or change one */
+.go-form { display: grid; gap: 10px; }
+.go-form h2 { font-size: var(--t-l); margin: 0; }
+.go-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; align-items: start; }
+.go-preview:empty { display: none; }

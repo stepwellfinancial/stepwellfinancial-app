@@ -1,0 +1,68 @@
+/* Settings and data. This stylesheet loads with the app, so the two
+   app-wide switches below hold on every screen. The shell sets their root
+   classes from the reader's settings. */
+
+/* Less motion: the same as the device's reduced-motion setting. */
+:root.sw-less-motion { --dur: 0ms; }
+:root.sw-less-motion *, :root.sw-less-motion *::before, :root.sw-less-motion *::after {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+
+/* More contrast: glass becomes solid panel, lines get stronger, no glow behind panels. */
+:root.sw-more-contrast { --glass: var(--panel); --glass-strong: var(--panel); --line: var(--muted); --glass-edge: var(--muted); --aurora: none; --blur: 0px; }
+
+.screen-settings { display: grid; gap: 16px; }
+.screen-settings .screen-head { margin-bottom: 0; }
+.st-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.st-card { display: grid; gap: 12px; align-content: start; }
+.st-card:focus { outline: none; }
+.st-card:focus-visible { outline: 2px solid var(--focus); }
+#st-where, #st-score { grid-column: 1 / -1; }
+@media (max-width: 899px) { .st-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .screen-settings, .st-grid { gap: 12px; } }
+
+.st-card h2 { margin: 0; }
+.st-card h3 { font-size: var(--t-m); margin: 4px 0 0; }
+.st-p { font-size: 16px; line-height: 1.6; max-width: 72ch; }
+.st-chip { margin: 0; }
+.st-note:empty { display: none; }
+.st-msg { font-size: 16px; line-height: 1.6; color: var(--ink); }
+.st-msg:empty { display: none; }
+.st-last { font-size: var(--t-s); line-height: 1.4; color: var(--muted); }
+.st-block { display: grid; gap: 10px; padding-top: 4px; }
+.st-block + .st-block { border-top: 1px solid var(--line); padding-top: 14px; }
+.st-strength { font-size: var(--t-m); line-height: 1.6; color: var(--ink); }
+.st-strength:empty { display: none; }
+.st-warn { border: 2px solid var(--ink); border-radius: var(--r-s); background: var(--panel-2); padding: 12px 14px; display: grid; gap: 8px; }
+.st-warn:focus { outline: none; }
+.st-warn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.st-panel { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--glass-edge); border-radius: var(--r-s); background: var(--panel-2); }
+.st-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.st-pair[hidden] { display: none; }
+.st-file-name { font-weight: 600; overflow-wrap: anywhere; }
+.st-remind { display: grid; gap: 10px; border-color: var(--ink); }
+.st-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.st-row-t { font-size: var(--t-s); font-weight: 600; }
+.st-table th[scope="row"] { text-align: left; font-weight: 600; }
+.st-table { font-size: var(--t-s); }
+.st-scores td:last-child { white-space: nowrap; }
+.st-scores .linkbtn { font-size: var(--t-s); }
+
+/* Credit score: the reader's number in ink, no band, no colour by value. */
+.st-score-line { font-size: var(--t-l); line-height: 1.4; font-weight: 700; }
+.st-figure { margin: 0; display: grid; gap: 6px; }
+.st-chart { width: 100%; max-width: 420px; height: auto; display: block; }
+.st-chart-base { stroke: var(--muted); stroke-width: 1; }
+.st-chart-line { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.st-chart-dot { fill: var(--ink); }
+.st-factors, .st-links { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 16px; line-height: 1.6; }
+
+/* Switches: on is the control's own state, so ledger is allowed (A-I4). */
+.st-list { list-style: none; margin: 0; padding: 0; }
+.st-toggle { padding: 10px 0; }
+.st-sub { font-size: var(--t-s); line-height: 1.45; }
+.st-switch { position: relative; width: 48px; height: 28px; flex: none; border-radius: 999px; cursor: pointer; padding: 0;
+  background: var(--panel-2); border: 1.5px solid var(--muted); transition: background var(--dur) var(--ease); }
+.st-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 19px; height: 19px; border-radius: 50%;
+  background: var(--muted); transition: left var(--dur) var(--ease); }
+.st-switch[aria-checked="true"] { background: var(--ledger); border-color: var(--ledger); }
+.st-switch[aria-checked="true"]::after { left: 23px; background: var(--on-ledger); }
