@@ -153,7 +153,8 @@
     if (c === null || c === undefined) return '';
     return window.SWCalc.moneyCents(c).replace('$', '').replace(window.SWCalc.MINUS, '-');
   }
-  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls })
+  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls, mask })
+  // mask: true hides a filled text field under Hide amounts, like a money field (the reader's name).
   // -> { el, input, error(msg), clear(), money() -> {ok, cents} | {ok: false, message}, text() }
   function field(o) {
     var fid = id('fk'), errId = fid + '-e', hintId = fid + '-h', input;
@@ -170,7 +171,7 @@
     // Hide amounts: a filled money field shows dots, and its value is not in
     // the field (so not read out) until it gets focus. The typed text is kept here.
     var DOTS = HIDDEN, real = null;
-    function masked() { return o.kind === 'money' && SW.fmt.hidden && document.activeElement !== input; }
+    function masked() { return (o.kind === 'money' || o.mask) && SW.fmt.hidden && document.activeElement !== input; }
     function mask() {
       if (real !== null && input.value === DOTS) return; // already masked
       if (masked() && input.value.trim()) { real = input.value; input.value = DOTS; } else real = null;
@@ -185,6 +186,11 @@
         if (input.value.trim() && r.ok) input.value = inputText(r.cents);
         mask();
       });
+      mask();
+    } else if (o.mask) {
+      masks.set(input, { hide: mask, show: unmask });
+      input.addEventListener('focus', unmask);
+      input.addEventListener('blur', mask);
       mask();
     }
     var err = h('p', { class: 'fk-err', id: errId });
@@ -213,7 +219,7 @@
         var r = window.SWSchema.parseMoney(v);
         return r.ok ? { ok: true, cents: r.cents } : { ok: false, message: r.message };
       },
-      text: function () { return input.value.trim(); }
+      text: function () { return value().trim(); }
     };
   }
   // Puts a store refusal under the right fields; returns true if any matched.

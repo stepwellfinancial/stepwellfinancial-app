@@ -18,8 +18,8 @@
       ]));
 
       // Sample chart: month-end net worth of the sample household, Nov 2025 to Oct 2026.
-      // Shown only while the sample demo is offered (SW.flags.sampleMode).
-      if (ctx.flags.sampleMode) sampleChart();
+      // Shown only after the reader chose the sample demo: sample figures are opt-in.
+      if (ctx.flags.sampleMode && st.status().hasSample) sampleChart();
       function sampleChart() {
       var series = C.netSeries(D), from = 1, last = series.length - 1;
       var idx = []; for (var i = from; i <= last; i++) idx.push(i);

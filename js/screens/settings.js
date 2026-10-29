@@ -601,14 +601,14 @@
       }
       // ---------- Your name (shown at the top of the app, on this device only) ----------
       function nameCard() {
-        var who = K.field({ label: 'What should we call you?', kind: 'text', cap: 'displayName', optional: true, value: store.displayName(),
+        var who = K.field({ label: 'What should we call you?', kind: 'text', cap: 'displayName', optional: true, mask: true, value: store.displayName(),
           hint: 'Shown at the top of the app, on this device only. Leave it blank to show nothing.' });
         who.input.setAttribute('data-focus', 'who');
         who.input.setAttribute('autocomplete', 'off');
         who.input.setAttribute('spellcheck', 'false');
         function save() {
           who.clear(); saveBtn.disabled = true;
-          store.setDisplayName(who.input.value).then(function () { setNote('Saved.'); state.focus = 'who-save'; draw(); },
+          store.setDisplayName(who.text()).then(function () { setNote('Saved.'); state.focus = 'who-save'; draw(); },
             function (e) { saveBtn.disabled = false; who.error(e.message); who.input.focus(); });
         }
         var saveBtn = btn('Save', 'btn small quiet', 'who-save', save);
@@ -640,7 +640,7 @@
           });
         });
         return card('delete', 'Delete all my data on this device', [
-          para('This removes ' + P.countsText(counts()) + ', and your settings from this device. We have no copy, so we can’t bring them back. Files you downloaded before, such as backups, are not touched.', 'body'),
+          para('This removes ' + P.countsText(counts()) + (store.displayName() ? ', your settings and the name you gave the app' : ', and your settings') + ' from this device. We have no copy, so we can’t bring them back. Files you downloaded before, such as backups, are not touched.', 'body'),
           word.el, msg,
           h('div', { class: 'fk-actions' }, [del, btn('Save a backup first', 'btn small quiet', null, function () { go('backup-first'); })])
         ], 'st-delete');
