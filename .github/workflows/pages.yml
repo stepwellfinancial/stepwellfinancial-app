@@ -1,10 +1,12 @@
 # The Stepwell Financial APP's workflow (app.stepwellfinancial.com).
 #
-# It publishes only the files named in deploy/RELEASE-FILES.txt, one path per
-# line: the app, the Privacy and Terms pages, the 404 page, CNAME and
-# robots.txt. Tests, docs, scripts, deploy files, sample market data and
-# fixtures are never staged, so they are never published. Runs on every push
-# to main, or by hand from the Actions tab.
+# The public repository holds only the released files (the paths in the
+# private repository's deploy/RELEASE-FILES.txt, checked there with
+# scripts/check-release.py before each release commit): the app, the Privacy
+# and Terms pages, the 404 page, CNAME and robots.txt. This workflow publishes
+# every tracked file except .github, and refuses to publish if a test, doc,
+# script, deploy, data or hidden path is present, so it cannot publish the
+# private repository. Runs on every push to main, or by hand from the Actions tab.
 name: Deploy app to GitHub Pages
 
 on:
@@ -24,24 +26,7 @@ concurrency:
 # workflow); the release tag is in the comment. To update, look up the new
 # tag's commit with git ls-remote and change both.
 jobs:
-  # Refuses to publish while the release list names a missing or private path,
-  # while anything released points outside the list, or while a listed script
-  # or stylesheet is loaded by nothing. The deploy job needs this job, so it
-  # never runs if this fails. Read-only: no pages or id-token permission.
-  verify:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0 (= v4)
-        with:
-          persist-credentials: false
-
-      - name: Check the release list
-        run: python3 -I scripts/check-release.py
-
   deploy:
-    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,21 +40,20 @@ jobs:
         with:
           persist-credentials: false
 
-      # Copies the listed paths, and nothing else, into _site. The two files under
-      # .github are on the list so the list is complete, but they are never
-      # staged: a workflow file is not a page, and no dotfolder is published.
-      - name: Stage only the files on the release list
+      # Copies the tracked files, and nothing else, into _site. The two files under
+      # .github are never staged: a workflow file is not a page, and no
+      # dotfolder is published.
+      - name: Stage only the tracked release files
         run: |
           set -euo pipefail
           mkdir _site
-          while IFS= read -r rel || [ -n "$rel" ]; do
-            [ -z "$rel" ] && continue
+          git ls-files -z | while IFS= read -r -d '' rel; do
             case "$rel" in
               .github/*) continue ;;
               /*|*..*) echo "Refusing the path: $rel"; exit 1 ;;
             esac
-            cp -R --parents -- "${rel%/}" _site/
-          done < deploy/RELEASE-FILES.txt
+            cp --parents -- "$rel" _site/
+          done
           # Nothing private or hidden may have come along.
           if find _site \( -name '.*' -o -path '_site/tests*' -o -path '_site/docs*' -o -path '_site/scripts*' -o -path '_site/deploy*' -o -path '_site/data*' \) | grep -q .; then
             echo "A private or hidden path was staged:"; find _site \( -name '.*' -o -path '_site/tests*' -o -path '_site/docs*' -o -path '_site/scripts*' -o -path '_site/deploy*' -o -path '_site/data*' \)
