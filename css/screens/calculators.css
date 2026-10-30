@@ -1,0 +1,78 @@
+/* Calculators (F2): layout, and the compound interest chart's colours and text sizes. */
+.screen-calculators { display: grid; gap: var(--s4); }
+.cs-about .band-tools { margin: 0; }
+
+.cs-intro { display: grid; gap: var(--s2); }
+.cs-h2 { font-size: var(--t-xl); line-height: 1.2; margin: 0; }
+.cs-h3 { font-size: var(--t-l); line-height: 1.25; margin: 0; }
+.cs-lede, .cs-body { font-size: var(--t-m); line-height: 1.6; color: var(--ink); max-width: 70ch; margin: 0; }
+
+.cs-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .cs-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .cs-grid { gap: 12px; } .cs-h2 { font-size: var(--t-l); } .cs-h3 { font-size: var(--t-m); } }
+
+/* Inputs */
+.cs-fields { display: grid; gap: 16px; }
+.cs-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 14px; }
+.cs-timing { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
+.cs-timing legend { font-size: var(--t-s); font-weight: 600; padding: 0; margin-bottom: 6px; }
+.cs-timing label { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: var(--t-s); }
+.cs-timing input { width: 22px; height: 22px; margin: 0; accent-color: var(--ledger); flex: none; }
+
+/* Results */
+.cs-stale .cs-chart, .cs-stale .cs-tiles, .cs-stale .cs-legend { opacity: .35; }
+.cs-chart { aspect-ratio: 640 / 480; margin-top: 6px; }
+@media (min-width: 821px) { .cs-chart { aspect-ratio: 640 / 370; } }
+@media (max-width: 525px) { .cs-chart { aspect-ratio: 640 / 600; } }
+.cs-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.cs-legend { margin-top: 8px; }
+.cs-key { display: inline-block; flex: none; }
+.cs-key-compound { width: 16px; height: 3px; border-radius: 2px; background: var(--ledger); }
+.cs-key-simple { width: 16px; height: 0; border-top: 3px dotted var(--compare); }
+.cs-key-contrib { width: 16px; height: 0; border-top: 2px dashed var(--contrib); }
+.cs-floor { margin-top: 6px; }
+.cs-illus { font-size: var(--t-m); line-height: 1.6; color: var(--ink); margin: 0 0 6px; overflow-wrap: anywhere; }
+.cs-illus .money { white-space: normal; overflow-wrap: anywhere; }
+.cs-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0 10px; }
+@media (max-width: 639px) { .cs-tiles { grid-template-columns: minmax(0, 1fr); } }
+.cs-tiles > div { background: var(--panel-2); border-radius: var(--r-s); padding: 12px; min-width: 0; }
+.cs-tiles dt { color: var(--muted); font-size: var(--t-s); line-height: 1.3; }
+.cs-tiles dd { margin: 4px 0 0; font-size: var(--t-l); font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cs-tiles .cs-hi { background: var(--ledger-tint); }
+.cs-tiles .cs-hi dt { color: var(--ink); font-weight: 600; }
+.cs-tiles .cs-hi dd { font-size: var(--t-xl); }
+.cs-summary { font-size: var(--t-m); line-height: 1.6; overflow-wrap: anywhere; }
+/* Very large figures (the maximum inputs) wrap instead of widening the page. */
+.cs-tiles .money, .cs-summary .money { white-space: normal; overflow-wrap: anywhere; }
+
+/* Chart drawing */
+.cs-chart .cs-gridline { stroke: var(--line); stroke-width: 1; }
+.cs-chart .cs-axis { fill: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.cs-chart .sz-wide .cs-axis { font-size: 13px; }
+.cs-chart .sz-narrow .cs-axis { font-size: 12px; }
+.cs-chart .cs-ln { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.cs-chart .cs-ln-compound { stroke: var(--ledger); }
+.cs-chart .cs-ln-simple { stroke: var(--compare); stroke-dasharray: 1 6; stroke-width: 3.5; }
+.cs-chart .cs-ln-contrib { stroke: var(--contrib); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.cs-chart .cs-gap { fill: var(--ledger); opacity: .22; }
+.cs-chart .cs-dot-compound { fill: var(--ledger); }
+.cs-chart .cs-dot-simple { fill: var(--compare); }
+.cs-chart .cs-gap-label, .cs-chart .cs-end { paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round; font-variant-numeric: tabular-nums; font-weight: 600; }
+.cs-chart .cs-gap-label { fill: var(--ink); font-size: 14px; }
+.cs-chart .sz-wide .cs-gap-label { font-size: 14px; }
+.cs-chart .sz-narrow .cs-gap-label { font-size: 13px; }
+.cs-chart .cs-end { font-size: 12px; }
+.cs-chart .sz-wide .cs-end { font-size: 13px; }
+.cs-chart .sz-narrow .cs-end { font-size: 12px; }
+.cs-chart .cs-end-compound { fill: var(--ledger); }
+.cs-chart .cs-end-simple { fill: var(--compare); }
+.cs-chart .cs-lead { stroke-width: 1.5; }
+.cs-chart .cs-lead-compound { stroke: var(--ledger); }
+.cs-chart .cs-lead-simple { stroke: var(--compare); }
+.cs-chart .cs-hit { fill: transparent; }
+.cs-chart .cs-hit:hover { fill: var(--line); opacity: .35; }
+
+/* Table: the chart's text version */
+.cs-table summary { font-size: var(--t-m); }
+.cs-table .numtable { font-size: var(--t-s); }
+.cs-table .numtable tbody th { font-weight: 400; }

@@ -1,10 +1,9 @@
-/* Welcome (F1) and Calculators (F2) */
-.screen-welcome .stack, .screen-welcome, .screen-calculators { display: grid; gap: var(--s4); }
+/* Welcome (F1) */
+.screen-welcome .stack, .screen-welcome { display: grid; gap: var(--s4); }
 .wl-line { font-size: var(--t-l); line-height: 1.4; color: var(--ink); margin: 0 0 var(--s3); }
 .wl-body { font-size: var(--t-m); line-height: 1.6; color: var(--ink); margin: 0; max-width: 68ch; }
 .wl-chart { min-height: 240px; }
 .wl-ask { display: grid; gap: var(--s2); justify-items: start; }
 .band-tools { border: 1px solid var(--muted); border-radius: var(--r-s); padding: var(--s3); color: var(--ink); background: var(--panel-2); margin: 0 0 var(--s3); line-height: 1.6; }
 .band-app { border: 1px solid var(--ledger); border-radius: var(--r-s); padding: var(--s3); color: var(--ink); margin: 0; line-height: 1.6; }
-.calc-list { list-style: none; margin: 0; padding: 0; }
-.calc-row { display: flex; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; }
+.wl-actions { margin: 0 0 var(--s3); }

@@ -1,5 +1,5 @@
-/* Welcome (concept F1) and Calculators (concept F2): the front door and the
-   line between the free tools and the app. The positioning lines are brand
+/* Welcome (concept F1): the front door and the line between the calculators
+   and the app (the Calculators screen is js/screens/calculators.js). The positioning lines are brand
    rule S5, word for word. The chart uses the sample household (js/data.js),
    labelled "Sample data"; nothing here reads or stores the reader's data. */
 (function () {
@@ -65,38 +65,13 @@
       }
 
       // The line between the tools and the app.
-      wrap.appendChild(h('section', { class: 'card wl-line-card', 'aria-label': 'Free tools and the app' }, [
-        h('p', { class: 'band-tools' }, ['Free tools run in your browser. What you type is not sent to us. ', h('a', { href: '#/calculators', text: 'Open the calculators' })]),
+      wrap.appendChild(h('section', { class: 'card wl-line-card', 'aria-label': 'The calculators and the app' }, [
+        h('p', { class: 'band-tools' }, ['The calculators run in your browser. What you type is not sent to us.']),
+        h('p', { class: 'wl-actions' }, [h('a', { class: 'btn', href: '#/calculators', text: 'Open the calculators' })]),
         h('p', { class: 'band-app' }, [h('span', { class: 'chip device' }, [h('span', { class: 'dot' }), 'On this device only']), ' The app keeps your numbers on this device so you can come back to them.'])
       ]));
       return { destroy: function () { cleanup.forEach(function (f) { f(); }); } };
     }
   });
 
-  SW.screens.register('calculators', {
-    render: function (wrap, ctx) {
-      var h = ctx.dom.h;
-      wrap.appendChild(ctx.app.screenHeader(ctx.route, { title: 'Free calculators' }));
-      // Only tools that exist on the calculator site today.
-      var tools = [
-        ['Compound interest calculator', 'See how money put in can grow at an example rate']
-      ];
-      var ul = h('ul', { class: 'calc-list', role: 'list' });
-      tools.forEach(function (t) {
-        ul.appendChild(h('li', { class: 'li calc-row' }, [
-          h('span', {}, [t[0], h('span', { class: 'sub', text: t[1] })]),
-          h('span', { class: 'fine', text: 'On the calculator site' })
-        ]));
-      });
-      wrap.appendChild(h('section', { class: 'card', 'aria-labelledby': 'calc-h' }, [
-        h('h2', { id: 'calc-h', class: 'sr-only', text: 'The calculators' }),
-        h('p', { class: 'band-tools', text: 'Runs in your browser. What you type is not sent to us. No account needed.' }),
-        ul
-      ]));
-      wrap.appendChild(h('section', { class: 'card' }, [
-        h('p', {}, ['Want to keep your numbers and see them together? The app saves them, only on this device. ', h('a', { href: '#/welcome', text: 'See how the app works' })])
-      ]));
-      return null;
-    }
-  });
 })();

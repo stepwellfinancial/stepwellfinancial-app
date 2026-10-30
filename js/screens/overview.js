@@ -24,6 +24,7 @@
 
       if (!A.length) {
         wrap.appendChild(emptyCard());
+        wrap.appendChild(calcCard());
         return null;
       }
 
@@ -36,7 +37,17 @@
       right.appendChild(budgetCard());
       if (sample && ctx.flags.markets) right.appendChild(marketsCard());
       right.appendChild(recentCard());
+      right.appendChild(calcCard());
       return { destroy: function () { cleanup.forEach(function (f) { f(); }); } };
+
+      // ---------- The calculators ----------
+      function calcCard() {
+        return h('section', { class: 'card ov-calc', 'aria-labelledby': 'ov-calc-h' }, [
+          h('h2', { id: 'ov-calc-h', text: 'Calculators' }),
+          h('p', { class: 'fine body-note', text: 'A compound interest calculator with a chart and a year-by-year table. It runs in your browser, and what you type is not saved.' }),
+          h('p', { class: 'ov-actions' }, [h('a', { class: 'btn', href: '#/calculators', text: 'Open the calculators' })])
+        ]);
+      }
 
       // ---------- Nothing yet ----------
       function emptyCard() {
