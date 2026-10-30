@@ -148,13 +148,30 @@
   /* Growth multiple and the percent beside "Compounding adds". Both are plain ratios
    * for the labels. Anything that is not a real, finite number, or a base of zero or
    * less, gives null (and "" as text), so no label ever shows NaN or Infinity. */
-  var ONE_DECIMAL = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  var WHOLE = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
   function isNum(v) { return typeof v === "number" && isFinite(v); }
+  function cents(v) { return Math.round(v * 100); }
 
-  /* ending balance / total put in (the starting amount plus every contribution). */
+  /* num / den, rounded half up to one decimal, as a whole number of tenths. Both are
+   * whole numbers: the division of floats is never rounded a second time (a ratio that
+   * is exactly x.x5 in dollars sits a hair below it in binary, such as 3249.9999999999995). */
+  function tenths(num, den) {
+    var n = 20 * num + den, d = 2 * den;       // floor(10 * num / den + 1/2)
+    var q = Math.floor(n / d);
+    if (q * d > n) q--; else if ((q + 1) * d <= n) q++;   // settle a float division that landed on the wrong side
+    return q;
+  }
+
+  /* 31 -> "3.1": tenths as text, with a thousands separator, "." and one decimal. */
+  function tenthsText(t) { return WHOLE.format(Math.floor(t / 10)) + "." + (t % 10); }
+
+  /* ending balance / total put in (the starting amount plus every contribution), from
+   * whole cents so a figure like $3,250.00 is exactly 3250. */
   function growthMultiple(ending, putIn) {
-    if (!isNum(ending) || !isNum(putIn) || putIn <= 0 || ending < 0) return null;
-    var m = ending / putIn;
+    if (!isNum(ending) || !isNum(putIn) || ending < 0) return null;
+    var e = cents(ending), p = cents(putIn);
+    if (!(p > 0)) return null;
+    var m = e / p;
     return isFinite(m) ? m : null;
   }
 
@@ -165,24 +182,26 @@
 
   /* "2.3×" (the multiplication sign, U+00D7, no space), or "" when there is no multiple (or it is past TEXT_CAP). */
   function multipleText(ending, putIn) {
-    var m = growthMultiple(ending, putIn);
-    return m === null || m >= TEXT_CAP ? "" : ONE_DECIMAL.format(m) + "×";
+    if (growthMultiple(ending, putIn) === null) return "";
+    var t = tenths(cents(ending), cents(putIn));
+    return t >= TEXT_CAP * 10 ? "" : tenthsText(t) + "×";   // the cap is checked after rounding
   }
 
   /* What compounding adds, as a percent of simple interest's ending balance. */
   function addsPercent(extra, simpleFinal) {
-    if (!isNum(extra) || !isNum(simpleFinal) || simpleFinal <= 0 || extra < 0) return null;
-    var p = extra / simpleFinal * 100;
+    if (!isNum(extra) || !isNum(simpleFinal) || extra < 0) return null;
+    var x = cents(extra), s = cents(simpleFinal);
+    if (!(s > 0)) return null;
+    var p = x * 100 / s;
     return isFinite(p) ? p : null;
   }
 
   /* "+36.5%", or "" when there is no percent, it rounds to 0.0% (nothing to say
-   * beyond the dollar figure beside it), or it is past TEXT_CAP. */
+   * beyond the dollar figure beside it), or it is past TEXT_CAP (after rounding). */
   function addsPercentText(extra, simpleFinal) {
-    var p = addsPercent(extra, simpleFinal);
-    if (p === null || p >= TEXT_CAP) return "";
-    var s = ONE_DECIMAL.format(p);
-    return s === "0.0" ? "" : "+" + s + "%";
+    if (addsPercent(extra, simpleFinal) === null) return "";
+    var t = tenths(cents(extra) * 100, cents(simpleFinal));
+    return t === 0 || t >= TEXT_CAP * 10 ? "" : "+" + tenthsText(t) + "%";
   }
 
   var api = {
