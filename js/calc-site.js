@@ -145,6 +145,46 @@
     return /^-?(\d+\.?\d*|\.\d+)$/.test(cleaned) ? Number(cleaned) : NaN;
   }
 
+  /* Growth multiple and the percent beside "Compounding adds". Both are plain ratios
+   * for the labels. Anything that is not a real, finite number, or a base of zero or
+   * less, gives null (and "" as text), so no label ever shows NaN or Infinity. */
+  var ONE_DECIMAL = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  function isNum(v) { return typeof v === "number" && isFinite(v); }
+
+  /* ending balance / total put in (the starting amount plus every contribution). */
+  function growthMultiple(ending, putIn) {
+    if (!isNum(ending) || !isNum(putIn) || putIn <= 0 || ending < 0) return null;
+    var m = ending / putIn;
+    return isFinite(m) ? m : null;
+  }
+
+  /* A multiple of 100,000x or more, or a percent of 100,000% or more, only comes from
+   * extreme inputs (such as 50% a year for decades). As a label it would be a wall
+   * of digits that squeezes the chart for no use, so the text is left out then. */
+  var TEXT_CAP = 100000;
+
+  /* "2.3×" (the multiplication sign, U+00D7, no space), or "" when there is no multiple (or it is past TEXT_CAP). */
+  function multipleText(ending, putIn) {
+    var m = growthMultiple(ending, putIn);
+    return m === null || m >= TEXT_CAP ? "" : ONE_DECIMAL.format(m) + "×";
+  }
+
+  /* What compounding adds, as a percent of simple interest's ending balance. */
+  function addsPercent(extra, simpleFinal) {
+    if (!isNum(extra) || !isNum(simpleFinal) || simpleFinal <= 0 || extra < 0) return null;
+    var p = extra / simpleFinal * 100;
+    return isFinite(p) ? p : null;
+  }
+
+  /* "+36.5%", or "" when there is no percent, it rounds to 0.0% (nothing to say
+   * beyond the dollar figure beside it), or it is past TEXT_CAP. */
+  function addsPercentText(extra, simpleFinal) {
+    var p = addsPercent(extra, simpleFinal);
+    if (p === null || p >= TEXT_CAP) return "";
+    var s = ONE_DECIMAL.format(p);
+    return s === "0.0" ? "" : "+" + s + "%";
+  }
+
   var api = {
     FREQUENCIES: FREQUENCIES,
     LIMITS: LIMITS,
@@ -152,7 +192,12 @@
     monthlyRate: monthlyRate,
     calculate: calculate,
     validate: validate,
-    parseAmount: parseAmount
+    parseAmount: parseAmount,
+    TEXT_CAP: TEXT_CAP,
+    growthMultiple: growthMultiple,
+    multipleText: multipleText,
+    addsPercent: addsPercent,
+    addsPercentText: addsPercentText
   };
   if (typeof module === "object" && module.exports) module.exports = api;
   root.CompoundCalc = api;

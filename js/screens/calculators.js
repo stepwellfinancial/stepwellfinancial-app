@@ -117,6 +117,9 @@
       var floorNote = h('p', { class: 'note cs-floor' });
       floorNote.hidden = true;
       var ddFinal = h('dd'), ddSimple = h('dd'), ddAdds = h('dd');
+      // The percent under "Compounding adds", in words; hidden when there is none.
+      var ddMore = h('dd', { class: 'cs-more' });
+      ddMore.hidden = true;
       var summary = h('p', { class: 'cs-summary', 'aria-live': 'polite' });
       var resultChip = h('span', { class: 'chip sample', text: 'Example inputs' });
       var illusLine = h('p', { class: 'cs-illus' });
@@ -133,9 +136,9 @@
       ]));
       resultCard.appendChild(floorNote);
       resultCard.appendChild(h('dl', { class: 'cs-tiles' }, [
-        h('div', { class: 'cs-hi' }, [h('dt', { text: 'With compound interest' }), ddFinal]),
-        h('div', {}, [h('dt', { text: 'With simple interest' }), ddSimple]),
-        h('div', {}, [h('dt', { text: 'Compounding adds' }), ddAdds])
+        h('div', { class: 'cs-hi' }, [h('dt', { text: 'Compound interest' }), ddFinal, h('dd', { class: 'cs-more', text: 'final balance' })]),
+        h('div', {}, [h('dt', { text: 'Simple interest' }), ddSimple, h('dd', { class: 'cs-more', text: 'final balance' })]),
+        h('div', {}, [h('dt', { text: 'Compounding adds' }), ddAdds, ddMore])
       ]));
       resultCard.appendChild(summary);
       resultCard.appendChild(h('p', { class: 'note body-note', text: 'For education only, not financial advice. This is an illustration, not a prediction. The 5% starting rate is only an example, so choose your own. Real returns vary and are not guaranteed. Taxes, fees and inflation are not included.' }));
@@ -155,7 +158,7 @@
 
       cbox.appendChild(h('section', { class: 'card cs-how', 'aria-labelledby': 'cs-how-h' }, [
         h('h3', { id: 'cs-how-h', class: 'cs-h3', text: 'How this calculator works' }),
-        h('p', { class: 'cs-body', text: 'It uses a common convention for savings accounts. Inside each compounding period your money earns simple interest month by month, and at the end of the period that interest is added to your balance and starts earning interest of its own. Your bank may work interest out differently, for example daily on your balance, so its figures can differ slightly from these. With daily compounding it uses the exact daily growth for each month. Contributions at the start of a month earn interest that month; contributions at the end start earning the next month. Every year\'s figure is worked out directly from the formula, so no rounding builds up. Everything runs in your browser, and nothing you type is sent to us or stored.' })
+        h('p', { class: 'cs-body', text: 'It uses a common convention for savings accounts. Inside each compounding period your money earns simple interest month by month, and at the end of the period that interest is added to your balance and starts earning interest of its own. Your bank may work interest out differently, for example daily on your balance, so its figures can differ slightly from these. With daily compounding it uses the exact daily growth for each month. Contributions at the start of a month earn interest that month; contributions at the end start earning the next month. Every year\'s figure is worked out directly from the formula, so no rounding builds up. The multiple under each end figure is the final balance divided by everything put in (the starting amount plus every contribution), and the percent beside Compounding adds is what compounding adds divided by the simple balance; both are rounded to one decimal place.Everything runs in your browser, and nothing you type is sent to us or stored.' })
       ]));
 
       // Below the calculators, so the loan chart is on screen without scrolling on a phone.
@@ -192,12 +195,18 @@
 
       // ---------- Drawing the figures ----------
       function setDd(dd, text) { dom.clear(dd); dd.appendChild(text); }
+      // "+6.8% more than the simple balance", or nothing (see addsPercentText in calc-site.js).
+      function setMore(pct) {
+        ddMore.textContent = pct ? pct + ' more than the simple balance' : '';
+        ddMore.hidden = !pct;
+      }
       function update() {
         var r = read(), errors = r.errors;
         if (Object.keys(errors).length) {
           // Never leave an old answer on screen as if it still applied.
           resultCard.classList.add('cs-stale');
           [ddFinal, ddSimple, ddAdds].forEach(function (dd) { dom.clear(dd); dd.textContent = '$...'; });
+          setMore('');
           dom.clear(tbody);
           last = null;
           summary.textContent = errors.frequency || errors.timing || 'Fix the highlighted field to see results.';
@@ -221,6 +230,7 @@
         setDd(ddFinal, mon(res.final));
         setDd(ddSimple, mon(res.simpleFinal));
         setDd(ddAdds, mon(res.compoundingAdds));
+        setMore(C.addsPercentText(res.compoundingAdds, res.simpleFinal));
         dom.clear(summary);
         summary.appendChild(document.createTextNode('You put in '));
         summary.appendChild(mon(res.contributions));
@@ -264,13 +274,20 @@
         var top = pts[pts.length - 1], years = pts.length - 1;
         // The end labels show the same figures, formatted the same way, as the tiles.
         var compoundText = money.format(top.balance), simpleText = money.format(top.simpleBalance);
-        var addsText = 'Compounding adds by year ' + years + ': ' + money.format(adds);
+        // Each end figure's growth multiple of everything put in (start plus contributions),
+        // and what compounding adds as a percent of the simple balance. Either is left out
+        // when it has no meaning (calc-site.js gives '' for zero money in, or a 0.0% gap).
+        var mult = { compound: C.multipleText(top.balance, top.contributions), simple: C.multipleText(top.simpleBalance, top.contributions) };
+        // Both or neither: one figure with a multiple and the other without would mislead.
+        if (!mult.compound || !mult.simple) mult = { compound: '', simple: '' };
+        var pct = C.addsPercentText(adds, top.simpleBalance);
+        var addsText = 'Compounding adds by year ' + years + ': ' + money.format(adds) + (pct ? ' (' + pct + ' vs simple)' : '');
         // Drawn at the chart box's own size in CSS pixels, so the text is the same size on
         // every screen. The height comes from the box's aspect-ratio in the stylesheet.
         var bw = Math.round(W), bh = 0;
         var ratio = String(getComputedStyle(host).aspectRatio || '').split('/').map(parseFloat);
         if (ratio.length === 2 && ratio[0] > 0 && ratio[1] > 0) bh = Math.round(bw * ratio[1] / ratio[0]);
-        var g = A.frame(pts, compoundText, simpleText, addsText, bw > 200 && bh > 100 ? { W: bw, H: bh } : null);
+        var g = A.frame(pts, compoundText, simpleText, addsText, bw > 200 && bh > 100 ? { W: bw, H: bh } : null, mult);
         var CW = g.W, CH = g.H, L = g.L, R = g.R, T = g.T, pw = g.pw, ph = g.ph, axis = g.axis, x = g.x, y = g.y;
         var svg = s('svg', { class: g.cls || null, viewBox: '0 0 ' + CW + ' ' + CH, 'aria-hidden': 'true', focusable: 'false' });
         function line(key) {
@@ -304,9 +321,17 @@
           } else if (Math.abs(e[2] - dy) > 1) {
             svg.appendChild(s('line', { class: 'cs-lead cs-lead-' + e[0], x1: (x(g.years) + 5).toFixed(1), y1: dy.toFixed(1), x2: (g.endX - 2).toFixed(1), y2: e[2].toFixed(1) }));
           }
-          var words = g.endsAbove ? g.endLines[e[0]].map(function (t, i) {
-            return s('tspan', { x: g.endX.toFixed(1), dy: i ? g.adds.lineH : 0 }, M(t));
-          }) : M(e[3]);
+          // The growth multiple is the last line under each figure (class cs-end-sub), in words.
+          var tsp = function (t, dy, sub) {
+            return s('tspan', { class: sub ? 'cs-end-sub' : null, x: g.endX.toFixed(1), dy: dy }, M(t));
+          };
+          var words;
+          if (g.endsAbove) {
+            var ls = g.endLines[e[0]];
+            words = ls.map(function (t, i) { return tsp(t, i ? g.adds.lineH : 0, !!g.sub && i === ls.length - 1); });
+          } else {
+            words = g.sub ? [tsp(e[3], 0, false), tsp(g.sub[e[0]], g.subStep, true)] : M(e[3]);
+          }
           svg.appendChild(s('text', { class: 'cs-end cs-end-' + e[0], x: g.endX.toFixed(1), y: e[2].toFixed(1), 'dominant-baseline': 'middle' }, words));
         });
         // Names the shaded area, in a corner the lines do not cross (see ChartAxis.frame). Same figure as the tile.
@@ -324,9 +349,13 @@
         var floorText = axis.floor > 0 ? A.axisLabel(axis.floor) : '';
         floorNote.textContent = floorText ? (F.hidden ? 'Chart starts above zero.' : 'Chart starts at ' + floorText + ', not $0.') : '';
         floorNote.hidden = !floorText;
+        // The same figures in words for screen readers, with the multiples and the percent.
+        // "1.5×" is read as "1.5 times", so a screen reader does not say the letter x.
+        var said = function (m) { return m ? ' (' + m.replace('×', ' times') + ' what you put in)' : ''; };
         host.setAttribute('aria-label', 'Illustration over ' + years + (years === 1 ? ' year' : ' years') + ': ' +
-          M(money.format(top.balance)) + ' with compound interest, ' + M(money.format(top.simpleBalance)) + ' with simple interest, total deposits ' +
-          M(money.format(top.contributions)) + '. ' + M(addsText) + '.' +
+          M(money.format(top.balance)) + ' with compound interest' + said(mult.compound) + ', ' + M(money.format(top.simpleBalance)) +
+          ' with simple interest' + said(mult.simple) + ', total deposits ' + M(money.format(top.contributions)) +
+          '. Compounding adds by year ' + years + ': ' + M(money.format(adds)) + (pct ? ', ' + pct.replace('+', '') + ' more than the simple balance' : '') + '.' +
           (floorText ? (F.hidden ? ' The chart starts above zero.' : ' The chart starts at ' + floorText + ', not $0.') : ''));
       }
 

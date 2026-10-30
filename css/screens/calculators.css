@@ -41,6 +41,8 @@
 .cs-tiles .cs-hi { background: var(--ledger-tint); }
 .cs-tiles .cs-hi dt { color: var(--ink); font-weight: 600; }
 .cs-tiles .cs-hi dd { font-size: var(--t-xl); }
+/* The small line under a tile's figure ("final balance", "+6.8% more than the simple balance"). */
+.cs-tiles dd.cs-more, .cs-tiles .cs-hi dd.cs-more { margin-top: 2px; font-size: var(--t-s); font-weight: 400; color: var(--muted); }
 .cs-summary { font-size: var(--t-m); line-height: 1.6; overflow-wrap: anywhere; }
 /* Very large figures (the maximum inputs) wrap instead of widening the page. */
 .cs-tiles .money, .cs-summary .money { white-space: normal; overflow-wrap: anywhere; }
@@ -61,9 +63,11 @@
 .cs-chart .cs-gap-label { fill: var(--ink); font-size: 14px; }
 .cs-chart .sz-wide .cs-gap-label { font-size: 14px; }
 .cs-chart .sz-narrow .cs-gap-label { font-size: 13px; }
-.cs-chart .cs-end { font-size: 12px; }
+/* End labels (the figure and the multiple under it) are 13px on every screen: app text is 13px or more. */
+.cs-chart .cs-end { font-size: 13px; }
 .cs-chart .sz-wide .cs-end { font-size: 13px; }
-.cs-chart .sz-narrow .cs-end { font-size: 12px; }
+.cs-chart .sz-narrow .cs-end { font-size: 13px; }
+.cs-chart .cs-end .cs-end-sub { font-weight: 400; }
 .cs-chart .cs-end-compound { fill: var(--ledger); }
 .cs-chart .cs-end-simple { fill: var(--compare); }
 .cs-chart .cs-lead { stroke-width: 1.5; }
