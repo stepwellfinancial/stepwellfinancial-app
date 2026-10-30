@@ -90,14 +90,14 @@
       // ---------- 1 of 4: what the app does ----------
       function step1() {
         // The reader's name is optional. It is saved when they press Continue (or Enter), and shown only at the top of the app.
-        var who = K.field({ label: 'What should we call you?', kind: 'text', cap: 'displayName', optional: true, value: store.displayName(),
+        var who = K.field({ label: 'What should we call you?', kind: 'text', cap: 'displayName', optional: true, mask: true, value: store.displayName(),
           hint: 'Shown at the top of the app, on this device only. Leave it blank to show nothing.' });
         who.input.setAttribute('spellcheck', 'false');
         var cont = linkBtn('Continue', BASE + '2');
         cont.addEventListener('click', function (e) {
-          if (who.input.value.trim() === store.displayName()) return;
+          if (who.text() === store.displayName()) return;
           e.preventDefault(); who.clear();
-          store.setDisplayName(who.input.value).then(function () { location.hash = BASE + '2'; },
+          store.setDisplayName(who.text()).then(function () { location.hash = BASE + '2'; },
             function (err) { who.error(err.message); who.input.focus(); });
         });
         who.input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cont.click(); } });

@@ -35,17 +35,26 @@
 .cs-illus .money { white-space: normal; overflow-wrap: anywhere; }
 .cs-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0 10px; }
 @media (max-width: 639px) { .cs-tiles { grid-template-columns: minmax(0, 1fr); } }
-.cs-tiles > div { background: var(--panel-2); border-radius: var(--r-s); padding: 12px; min-width: 0; }
+/* A figure never breaks inside a number. Each tile is a container, so its figure is sized to
+   the tile's own width (down to 16px). If a figure still does not fit its tile, calculators.js
+   adds .cs-stack and the three tiles stack into one column. Only when it does not fit even
+   then (the very largest inputs) does it get .cs-wrap, 13px (the app's floor), and may wrap. The plain
+   font-size before each clamp is the fallback where container units are not supported. */
+.cs-tiles.cs-stack { grid-template-columns: minmax(0, 1fr); }
+.cs-tiles > div { background: var(--panel-2); border-radius: var(--r-s); padding: 12px; min-width: 0; container-type: inline-size; }
 .cs-tiles dt { color: var(--muted); font-size: var(--t-s); line-height: 1.3; }
-.cs-tiles dd { margin: 4px 0 0; font-size: var(--t-l); font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cs-tiles dd { margin: 4px 0 0; font-size: var(--t-m); font-size: clamp(var(--t-m), 11cqw, var(--t-l)); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cs-tiles .cs-hi { background: var(--ledger-tint); }
 .cs-tiles .cs-hi dt { color: var(--ink); font-weight: 600; }
-.cs-tiles .cs-hi dd { font-size: var(--t-xl); }
+.cs-tiles .cs-hi dd { font-size: var(--t-m); font-size: clamp(var(--t-m), 11cqw, var(--t-xl)); }
 /* The small line under a tile's figure ("final balance", "+6.8% more than the simple balance"). */
-.cs-tiles dd.cs-more, .cs-tiles .cs-hi dd.cs-more { margin-top: 2px; font-size: var(--t-s); font-weight: 400; color: var(--muted); }
+.cs-tiles dd.cs-more, .cs-tiles .cs-hi dd.cs-more { margin-top: 2px; font-size: var(--t-s); font-weight: 400; color: var(--muted); white-space: normal; }
 .cs-summary { font-size: var(--t-m); line-height: 1.6; overflow-wrap: anywhere; }
-/* Very large figures (the maximum inputs) wrap instead of widening the page. */
-.cs-tiles .money, .cs-summary .money { white-space: normal; overflow-wrap: anywhere; }
+/* The sentence under the tiles wraps; so do the very largest figures (the maximum inputs), instead of widening the page. */
+.cs-tiles .money { white-space: nowrap; }
+.cs-tiles.cs-wrap dd, .cs-tiles.cs-wrap .money { white-space: normal; overflow-wrap: anywhere; }
+.cs-tiles.cs-wrap dd, .cs-tiles.cs-wrap .cs-hi dd { font-size: var(--t-xs); }   /* 13px, the app's floor, so it wraps as little as it can */
+.cs-summary .money { white-space: normal; overflow-wrap: anywhere; }
 
 /* Chart drawing */
 .cs-chart .cs-gridline { stroke: var(--line); stroke-width: 1; }

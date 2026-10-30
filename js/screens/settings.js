@@ -636,7 +636,9 @@
           del.disabled = true;
           state.deleting = true;
           store.deleteAll('DELETE').then(function (r) { deletedView(r); }, function (e) {
-            state.deleting = false; del.disabled = false; msg.hidden = false; msg.textContent = e.message;
+            state.deleting = false; del.disabled = false; msg.hidden = false;
+            // Another tab or window still holds the data: say what to do, not the raw word "blocked".
+            msg.textContent = e && e.code === 'blocked' ? 'Close the app in your other tabs or windows, then try again.' : e.message;
           });
         });
         return card('delete', 'Delete all my data on this device', [

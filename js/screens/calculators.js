@@ -24,7 +24,10 @@
 
       // Money text while amounts are shown, dots while hidden. Works on a whole
       // sentence too: every "$figure" in it becomes the dots.
-      function M(text) { return F.hidden ? String(text).replace(/\$[0-9]\S*/g, F.HIDDEN) : text; }
+      // The growth multiples ("1.5×") and percents ("+6.8%") hide the same way, as the Overview's percents do.
+      function M(text) {
+        return F.hidden ? String(text).replace(/\$[0-9]\S*/g, F.HIDDEN).replace(/\+?[0-9][0-9,]*\.[0-9](?:×|%)/g, F.HIDDEN) : text;
+      }
       function mon(v) { return dom.money(money.format(v)); }   // a tracked money span
       // Whole dollars when there are no cents ("$10,000"), cents otherwise.
       function whole(v) { return dom.money(Math.round(v * 100) % 100 === 0 ? money.format(v).replace(/\.00$/, '') : money.format(v)); }
@@ -135,11 +138,22 @@
         h('li', {}, [h('span', { class: 'cs-key cs-key-contrib' }), 'Total deposits'])
       ]));
       resultCard.appendChild(floorNote);
-      resultCard.appendChild(h('dl', { class: 'cs-tiles' }, [
+      var tiles = h('dl', { class: 'cs-tiles' }, [
         h('div', { class: 'cs-hi' }, [h('dt', { text: 'Compound interest' }), ddFinal, h('dd', { class: 'cs-more', text: 'final balance' })]),
         h('div', {}, [h('dt', { text: 'Simple interest' }), ddSimple, h('dd', { class: 'cs-more', text: 'final balance' })]),
         h('div', {}, [h('dt', { text: 'Compounding adds' }), ddAdds, ddMore])
-      ]));
+      ]);
+      resultCard.appendChild(tiles);
+      // A figure never breaks inside a number. It is shrunk to fit its tile (css, down to 13px);
+      // if it still does not fit, the three tiles stack into one column, each as wide as the card;
+      // only if it does not fit even then (the very largest inputs) may it wrap.
+      function fitTiles() {
+        tiles.classList.remove('cs-stack', 'cs-wrap');
+        var over = function () {
+          return [].some.call(tiles.querySelectorAll('dd:not(.cs-more)'), function (d) { return d.scrollWidth > d.clientWidth + 1; });
+        };
+        if (over()) { tiles.classList.add('cs-stack'); if (over()) tiles.classList.add('cs-wrap'); }
+      }
       resultCard.appendChild(summary);
       resultCard.appendChild(h('p', { class: 'note body-note', text: 'For education only, not financial advice. This is an illustration, not a prediction. The 5% starting rate is only an example, so choose your own. Real returns vary and are not guaranteed. Taxes, fees and inflation are not included.' }));
       grid.appendChild(resultCard);
@@ -158,7 +172,7 @@
 
       cbox.appendChild(h('section', { class: 'card cs-how', 'aria-labelledby': 'cs-how-h' }, [
         h('h3', { id: 'cs-how-h', class: 'cs-h3', text: 'How this calculator works' }),
-        h('p', { class: 'cs-body', text: 'It uses a common convention for savings accounts. Inside each compounding period your money earns simple interest month by month, and at the end of the period that interest is added to your balance and starts earning interest of its own. Your bank may work interest out differently, for example daily on your balance, so its figures can differ slightly from these. With daily compounding it uses the exact daily growth for each month. Contributions at the start of a month earn interest that month; contributions at the end start earning the next month. Every year\'s figure is worked out directly from the formula, so no rounding builds up. The multiple under each end figure is the final balance divided by everything put in (the starting amount plus every contribution), and the percent beside Compounding adds is what compounding adds divided by the simple balance; both are rounded to one decimal place.Everything runs in your browser, and nothing you type is sent to us or stored.' })
+        h('p', { class: 'cs-body', text: 'It uses a common convention for savings accounts. Inside each compounding period your money earns simple interest month by month, and at the end of the period that interest is added to your balance and starts earning interest of its own. Your bank may work interest out differently, for example daily on your balance, so its figures can differ slightly from these. With daily compounding it uses the exact daily growth for each month. Contributions at the start of a month earn interest that month; contributions at the end start earning the next month. Every year\'s figure is worked out directly from the formula, so no rounding builds up. The multiple under each end figure is the final balance divided by everything put in (the starting amount plus every contribution), and the percent beside Compounding adds is what compounding adds divided by the simple balance; both are rounded to one decimal place. Everything runs in your browser, and nothing you type is sent to us or stored.' })
       ]));
 
       // Below the calculators, so the loan chart is on screen without scrolling on a phone.
@@ -197,7 +211,7 @@
       function setDd(dd, text) { dom.clear(dd); dd.appendChild(text); }
       // "+6.8% more than the simple balance", or nothing (see addsPercentText in calc-site.js).
       function setMore(pct) {
-        ddMore.textContent = pct ? pct + ' more than the simple balance' : '';
+        ddMore.textContent = pct ? M(pct) + ' more than the simple balance' : '';
         ddMore.hidden = !pct;
       }
       function update() {
@@ -262,6 +276,7 @@
       // Three lines over the years: compound balance, simple interest balance, and
       // total deposits. The gap between the top two is what compounding adds.
       function draw(W) {
+        fitTiles();   // the card's width may have changed
         dom.clear(host);
         if (!last) {
           floorNote.hidden = true;
@@ -351,11 +366,11 @@
         floorNote.hidden = !floorText;
         // The same figures in words for screen readers, with the multiples and the percent.
         // "1.5×" is read as "1.5 times", so a screen reader does not say the letter x.
-        var said = function (m) { return m ? ' (' + m.replace('×', ' times') + ' what you put in)' : ''; };
+        var said = function (m) { return m ? ' (' + M(m).replace('×', ' times') + ' what you put in)' : ''; };
         host.setAttribute('aria-label', 'Illustration over ' + years + (years === 1 ? ' year' : ' years') + ': ' +
           M(money.format(top.balance)) + ' with compound interest' + said(mult.compound) + ', ' + M(money.format(top.simpleBalance)) +
           ' with simple interest' + said(mult.simple) + ', total deposits ' + M(money.format(top.contributions)) +
-          '. Compounding adds by year ' + years + ': ' + M(money.format(adds)) + (pct ? ', ' + pct.replace('+', '') + ' more than the simple balance' : '') + '.' +
+          '. Compounding adds by year ' + years + ': ' + M(money.format(adds)) + (pct ? ', ' + M(pct).replace('+', '') + ' more than the simple balance' : '') + '.' +
           (floorText ? (F.hidden ? ' The chart starts above zero.' : ' The chart starts at ' + floorText + ', not $0.') : ''));
       }
 
