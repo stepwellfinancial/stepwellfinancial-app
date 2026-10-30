@@ -31,19 +31,42 @@
 
       wrap.appendChild(ctx.app.screenHeader(ctx.route));
 
-      wrap.appendChild(h('section', { class: 'card cs-about', 'aria-label': 'About the calculators' }, [
-        h('p', { class: 'band-tools', text: 'The calculators run in your browser. What you type is not sent to us. No account needed.' })
-      ]));
+      // ---------- The switch: one calculator at a time ----------
+      // Both calculators are built at once. The one not chosen is hidden, so it
+      // keeps nothing on screen and nothing in the address (no URL state).
+      var cbox = h('div', { class: 'cs-calc' });          // the compound interest calculator
+      var loan = SW.loanCalculator.create(ctx);           // the loan amortization calculator
+      var which = SW.loanCalculator.recall().which === 'loan' ? 'loan' : 'compound';
+      var SWITCH = [['compound', 'Compound interest', 'growth'], ['loan', 'Loan amortization', 'house']];
+      var switchBtns = {};
+      var switchEl = h('div', { class: 'seg cs-switch', role: 'group', 'aria-label': 'Calculator' }, SWITCH.map(function (o) {
+        var b = h('button', { type: 'button', 'aria-pressed': 'false' }, [dom.icon(o[2], 'cl-ico'), h('span', { text: o[1] })]);
+        b.addEventListener('click', function () { if (which !== o[0]) pick(o[0], true); });
+        switchBtns[o[0]] = b;
+        return b;
+      }));
+      wrap.appendChild(h('div', { class: 'cs-switch-row' }, switchEl));
+      wrap.appendChild(cbox);
+      wrap.appendChild(loan.el);
+      function pick(w, user) {
+        which = w;
+        SW.loanCalculator.remember({ which: w });
+        cbox.hidden = w !== 'compound';
+        loan.el.hidden = w !== 'loan';
+        SWITCH.forEach(function (o) { switchBtns[o[0]].setAttribute('aria-pressed', o[0] === w ? 'true' : 'false'); });
+        if (w === 'compound' && chartCtl) chartCtl.redraw(); else if (w === 'loan') loan.shown();
+        if (user) ctx.app.announce(w === 'loan' ? 'Loan amortization' : 'Compound interest');
+      }
 
       // ---------- Compound interest ----------
-      wrap.appendChild(h('section', { class: 'cs-intro', 'aria-labelledby': 'cs-ci-h' }, [
-        h('h2', { id: 'cs-ci-h', class: 'cs-h2', text: 'Compound interest' }),
+      cbox.appendChild(h('section', { class: 'cs-intro', 'aria-labelledby': 'cs-ci-h' }, [
+        h('h2', { id: 'cs-ci-h', class: 'cs-h2' }, [dom.icon('growth', 'cl-ico'), 'Compound interest']),
         h('p', { class: 'cs-lede', text: 'See how money can grow when interest earns interest. Enter a starting amount, a monthly contribution and a rate. Results update as you type.' }),
         h('p', { class: 'cs-lede', text: 'The calculator explains how each result is worked out, so you can check every figure yourself. Stepwell Financial gives education and tools, not personal advice.' })
       ]));
 
       var grid = h('div', { class: 'cs-grid' });
-      wrap.appendChild(grid);
+      cbox.appendChild(grid);
 
       // Inputs
       var inputsCard = h('section', { class: 'card cs-inputs', 'aria-labelledby': 'cs-in-h' });
@@ -128,11 +151,16 @@
           tbody
         ]))
       ]);
-      wrap.appendChild(h('section', { class: 'card', 'aria-label': 'Year by year table' }, tableWrap));
+      cbox.appendChild(h('section', { class: 'card', 'aria-label': 'Year by year table' }, tableWrap));
 
-      wrap.appendChild(h('section', { class: 'card cs-how', 'aria-labelledby': 'cs-how-h' }, [
+      cbox.appendChild(h('section', { class: 'card cs-how', 'aria-labelledby': 'cs-how-h' }, [
         h('h3', { id: 'cs-how-h', class: 'cs-h3', text: 'How this calculator works' }),
         h('p', { class: 'cs-body', text: 'It uses a common convention for savings accounts. Inside each compounding period your money earns simple interest month by month, and at the end of the period that interest is added to your balance and starts earning interest of its own. Your bank may work interest out differently, for example daily on your balance, so its figures can differ slightly from these. With daily compounding it uses the exact daily growth for each month. Contributions at the start of a month earn interest that month; contributions at the end start earning the next month. Every year\'s figure is worked out directly from the formula, so no rounding builds up. Everything runs in your browser, and nothing you type is sent to us or stored.' })
+      ]));
+
+      // Below the calculators, so the loan chart is on screen without scrolling on a phone.
+      wrap.appendChild(h('section', { class: 'card cs-about', 'aria-label': 'About the calculators' }, [
+        h('p', { class: 'band-tools', text: 'The calculators run in your browser. What you type is not sent to us. No account needed.' })
       ]));
 
       wrap.appendChild(h('section', { class: 'card' }, [
@@ -175,7 +203,7 @@
           summary.textContent = errors.frequency || errors.timing || 'Fix the highlighted field to see results.';
           exampleChip.hidden = true; resultChip.hidden = true;
           dom.clear(illusLine); illusLine.hidden = true;
-          if (chartCtl) chartCtl.redraw();
+          redrawChart();
           return;
         }
         resultCard.classList.remove('cs-stale');
@@ -206,6 +234,18 @@
             h('td', {}, mon(y.contributions)), h('td', {}, mon(y.interest)), h('td', {}, mon(y.balance)), h('td', {}, mon(y.simpleBalance))
           ]));
         });
+        redrawChart();
+      }
+      // While the other calculator is showing this one has no width to draw in, so its chart
+      // is cleared (no old figure stays in the page, which matters for Hide amounts) and drawn
+      // again when it is chosen.
+      function redrawChart() {
+        if (cbox.hidden) {
+          dom.clear(host);
+          host.setAttribute('aria-label', 'Growth chart comparing compound and simple interest');
+          floorNote.textContent = ''; floorNote.hidden = true;
+          return;
+        }
         if (chartCtl) chartCtl.redraw(); else chartCtl = SW.charts.responsive(host, draw);
       }
 
@@ -297,10 +337,11 @@
 
       buildInputs();
       update();
+      pick(which, false);
       return {
         // What was typed is not stored, so a change elsewhere (Hide amounts) redraws the figures in place.
-        onStoreChange: function (ev) { if (ev && ev.stores && ev.stores.indexOf('settings') >= 0) update(); return true; },
-        destroy: function () { if (chartCtl) chartCtl.destroy(); }
+        onStoreChange: function (ev) { if (ev && ev.stores && ev.stores.indexOf('settings') >= 0) { update(); loan.settingsChanged(); } return true; },
+        destroy: function () { if (chartCtl) chartCtl.destroy(); loan.destroy(); }
       };
     }
   });

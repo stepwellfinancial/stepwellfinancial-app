@@ -153,7 +153,8 @@
     if (c === null || c === undefined) return '';
     return window.SWCalc.moneyCents(c).replace('$', '').replace(window.SWCalc.MINUS, '-');
   }
-  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls, mask })
+  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls, mask, prefix })
+  // prefix: text put before a money field's figure, such as '$' (the field then shows $25,000.00).
   // mask: true hides a filled text field under Hide amounts, like a money field (the reader's name).
   // -> { el, input, error(msg), clear(), money() -> {ok, cents} | {ok: false, message}, text() }
   function field(o) {
@@ -165,7 +166,7 @@
     } else {
       input = h('input', { id: fid, type: o.kind === 'date' ? 'date' : 'text', autocomplete: 'off', spellcheck: o.kind === 'text' ? 'true' : 'false',
         inputmode: o.kind === 'money' ? 'decimal' : null });
-      input.value = o.kind === 'money' ? inputText(o.value) : (o.value || '');
+      input.value = o.kind === 'money' ? (o.prefix && o.value !== null && o.value !== undefined ? o.prefix : '') + inputText(o.value) : (o.value || '');
       if (o.kind !== 'date') cap(input, o.kind === 'money' ? 'money' : (o.cap || 'name'));
     }
     // Hide amounts: a filled money field shows dots, and its value is not in
@@ -183,7 +184,7 @@
       input.addEventListener('focus', unmask);
       input.addEventListener('blur', function () {
         var r = window.SWSchema.parseMoney(input.value);
-        if (input.value.trim() && r.ok) input.value = inputText(r.cents);
+        if (input.value.trim() && r.ok) input.value = (r.cents < 0 ? '' : o.prefix || '') + inputText(r.cents);
         mask();
       });
       mask();
