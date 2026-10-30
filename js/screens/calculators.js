@@ -296,7 +296,7 @@
         // Both or neither: one figure with a multiple and the other without would mislead.
         if (!mult.compound || !mult.simple) mult = { compound: '', simple: '' };
         var pct = C.addsPercentText(adds, top.simpleBalance);
-        var addsText = 'Compounding adds by year ' + years + ': ' + money.format(adds) + (pct ? ' (' + pct + ' vs simple)' : '');
+        var addsText = 'Compounding adds by year ' + years + ': ' + money.format(adds) + (pct ? ' (' + pct + A.words.pctTail + ')' : '');
         // Drawn at the chart box's own size in CSS pixels, so the text is the same size on
         // every screen. The height comes from the box's aspect-ratio in the stylesheet.
         var bw = Math.round(W), bh = 0;
@@ -336,7 +336,7 @@
           } else if (Math.abs(e[2] - dy) > 1) {
             svg.appendChild(s('line', { class: 'cs-lead cs-lead-' + e[0], x1: (x(g.years) + 5).toFixed(1), y1: dy.toFixed(1), x2: (g.endX - 2).toFixed(1), y2: e[2].toFixed(1) }));
           }
-          // The growth multiple is the last line under each figure (class cs-end-sub), in words.
+          // The growth multiple is the last line under each figure (class cs-end-sub); the full words are in the aria text.
           var tsp = function (t, dy, sub) {
             return s('tspan', { class: sub ? 'cs-end-sub' : null, x: g.endX.toFixed(1), dy: dy }, M(t));
           };

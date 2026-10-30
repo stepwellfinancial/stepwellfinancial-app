@@ -129,7 +129,7 @@
     if (cut < 0 || fits([text])) return [text];
     var two = [text.slice(0, cut + 1), text.slice(cut + 2)];
     if (fits(two)) return two;
-    // Still too long: the figure and its "(+6.8% vs simple)" on separate lines, else the
+    // Still too long: the figure and its "(+6.8%)" on separate lines, else the
     // words split before " by ", else both. The last way is used even if it does not fit.
     var by = two[0].indexOf(" by "), paren = two[1].indexOf(" (");
     var tries = [];
@@ -144,12 +144,15 @@
    * simpleText are the end labels; addsText is the "Compounding adds" label. size,
    * if given, is {W, H} in CSS pixels: the chart is then drawn at that size with the
    * text sizes from sizeFor(W). Without it, the 640 x 480 layout as before.
-   * mult, if given, is {compound, simple}: each end figure's growth multiple ("2.3x").
-   * It is written under that figure as "2.3× what you put in", or "2.3× deposits" when
-   * the longer words would squeeze the plot. Without mult the end labels are the
-   * figure alone, as before. */
+   * mult, if given, is {compound, simple}: each end figure's growth multiple ("2.3×"),
+   * written on a second line under that figure, followed by WORDS.multTail (empty: "2.3×").
+   * Without mult the end labels are the figure alone, as before. */
   var LABEL_H = 16, BAND_GAP = 8;
-  var SUB_LONG = " what you put in", SUB_SHORT = " deposits";
+  /* The words on the chart itself, in one place: what follows a multiple under an end figure and
+   * what follows the percent in the "Compounding adds" label. Both are bare for now, "1.5×" and
+   * "(+6.8%)". The fuller wordings considered were " deposits" ("1.5× deposits") and " more"
+   * ("(+6.8% more)"): put either back here and in the tests' TAIL_ constants. */
+  var WORDS = { multTail: "", pctTail: "" };
   // Clear space between the compound and the simple end label (each a figure and its
   // multiple), so a figure never reads as part of the label above it.
   var SUB_GAP = 8;
@@ -162,8 +165,7 @@
     var hasSub = !!(mult && mult.compound && mult.simple);
     // subStep is at least 1.25 times the text size, so the two lines keep a line height over 1.2.
     var subStep = hasSub ? (sz ? Math.ceil(labelPx * 1.25) : 15) : 0, hh = labelH + subStep;
-    var subWith = function (suffix) { return hasSub ? { compound: mult.compound + suffix, simple: mult.simple + suffix } : null; };
-    var subLong = subWith(SUB_LONG), subShort = subWith(SUB_SHORT);
+    var sub = hasSub ? { compound: mult.compound + WORDS.multTail, simple: mult.simple + WORDS.multTail } : null;
     var subWidth = function (s) { return s ? Math.max(labelWidth(s.compound, labelPx), labelWidth(s.simple, labelPx)) : 0; };
     var axis = scaleFor(pts);
     var W = sz ? size.W : 640, H = sz ? size.H : 480, T = sz ? 10 : 8, B = sz ? axisPx + 18 : 30;
@@ -178,14 +180,8 @@
       });
       L = 10 + Math.max.apply(null, tickW);
     }
-    var rightFor = function (s) {
-      return (sz ? 4 : 14) + 10 + Math.max(labelWidth(compoundText, labelPx), labelWidth(simpleText, labelPx), subWidth(s));
-    };
+    var R = (sz ? 4 : 14) + 10 + Math.max(labelWidth(compoundText, labelPx), labelWidth(simpleText, labelPx), subWidth(sub));
     var minPlot = Math.round(0.4 * W);
-    // The multiple's words in full, unless they would squeeze the plot below its
-    // minimum: then the shorter words, which still say what the multiple is of.
-    var sub = subLong, R = rightFor(sub);
-    if (sz && hasSub && W - L - R < minPlot) { sub = subShort; R = rightFor(sub); }
     // On a narrow chart "Compounding adds" would be as wide as the plot, so it goes
     // in its own band above the plot, starting at the chart's left edge. End figures
     // too long for the right margin go in that band too, so their text keeps its size:
@@ -202,8 +198,7 @@
         };
         endLines = { compound: named("Compound", compoundText), simple: named("Simple", simpleText) };
         if (hasSub) {
-          // The multiple is the last line of each: the full words if they fit the band.
-          sub = labelWidth(subLong.compound, labelPx) <= W - 2 - 22 && labelWidth(subLong.simple, labelPx) <= W - 2 - 22 ? subLong : subShort;
+          // The multiple is the last line of each.
           endLines.compound.push(sub.compound);
           endLines.simple.push(sub.simple);
         }
@@ -294,5 +289,5 @@
 
   root.ChartAxis = { niceMax: niceMax, niceStep: niceStep, scaleFor: scaleFor, axisLabel: axisLabel,
     endLabels: endLabels, labelWidth: labelWidth, addsWidth: addsWidth, frame: frame, LABEL_H: LABEL_H,
-    sizeFor: sizeFor, wrapAdds: wrapAdds };
+    sizeFor: sizeFor, wrapAdds: wrapAdds, words: WORDS };
 })(typeof self !== "undefined" ? self : this);
