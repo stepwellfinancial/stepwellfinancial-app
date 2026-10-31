@@ -79,7 +79,8 @@
       if (hit) return hit;
       Array.prototype.some.call(rootEl.querySelectorAll('[aria-label], [title], [aria-valuetext], input'), function (el) {
         ['aria-label', 'title', 'aria-valuetext'].forEach(function (a) { if (!hit && money(el.getAttribute(a))) hit = el.getAttribute(a); });
-        if (!hit && el.tagName === 'INPUT' && el.getAttribute('inputmode') === 'decimal' && el !== document.activeElement && /[0-9]/.test(el.value)) hit = 'a filled money field';
+        // data-plain-number: a decimal keypad on a field that is a rate or a count, not an amount (nothing to hide).
+        if (!hit && el.tagName === 'INPUT' && el.getAttribute('inputmode') === 'decimal' && !el.hasAttribute('data-plain-number') && el !== document.activeElement && /[0-9]/.test(el.value)) hit = 'a filled money field';
         return !!hit;
       });
       return hit;
@@ -153,7 +154,8 @@
     if (c === null || c === undefined) return '';
     return window.SWCalc.moneyCents(c).replace('$', '').replace(window.SWCalc.MINUS, '-');
   }
-  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls, mask, prefix })
+  // field({ label, hint, kind: 'money'|'text'|'date'|'select', value, options: [[value, label]], cap, optional, cls, mask, prefix, accepts })
+  // accepts: an optional function (text) -> boolean; a money field is tidied on blur only if it says yes.
   // prefix: text put before a money field's figure, such as '$' (the field then shows $25,000.00).
   // mask: true hides a filled text field under Hide amounts, like a money field (the reader's name).
   // -> { el, input, error(msg), clear(), money() -> {ok, cents} | {ok: false, message}, text() }
@@ -184,7 +186,9 @@
       input.addEventListener('focus', unmask);
       input.addEventListener('blur', function () {
         var r = window.SWSchema.parseMoney(input.value);
-        if (input.value.trim() && r.ok) input.value = (r.cents < 0 ? '' : o.prefix || '') + inputText(r.cents);
+        // o.accepts(text): a screen with a stricter reader of its own (the calculators refuse "0,500") says so, so the kit never
+        // rewrites text into a different number than the screen would read from it.
+        if (input.value.trim() && r.ok && (!o.accepts || o.accepts(input.value))) input.value = (r.cents < 0 ? '' : o.prefix || '') + inputText(r.cents);
         mask();
       });
       mask();

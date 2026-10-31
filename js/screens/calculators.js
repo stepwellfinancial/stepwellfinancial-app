@@ -86,22 +86,49 @@
       var timingEnd = null, timingStart = null;
       function buildInputs() {
         dom.clear(fieldsBox);
+        // accepts: the form kit tidies a left money field only where the website's reader reads it as a number ("0,500" is not one).
+        var readable = function (t) { return C.classifyAmount(t, true) === 'ok'; };
         f = {
-          principal: K.field({ label: 'Initial deposit', kind: 'money', value: DEFAULTS.principal * 100 }),
-          monthly: K.field({ label: 'Monthly contribution', kind: 'money', value: DEFAULTS.monthly * 100 }),
+          principal: K.field({ label: 'Initial deposit', kind: 'money', value: DEFAULTS.principal * 100, accepts: readable }),
+          monthly: K.field({ label: 'Monthly contribution', kind: 'money', value: DEFAULTS.monthly * 100, accepts: readable }),
           ratePct: K.field({ label: 'Annual interest rate (%)', kind: 'text', value: DEFAULTS.ratePct, cap: 'money' }),
           years: K.field({ label: 'Years to grow', kind: 'text', value: DEFAULTS.years, cap: 'money' }),
           frequency: K.field({ label: 'Compounding', kind: 'select', value: DEFAULTS.frequency, options: FREQ_LABELS })
         };
-        // No decimal keypad on the rate: Hide amounts treats any decimal-keypad field as a figure.
+        // The rate gets the decimal keypad on a phone, as on the website; data-plain-number tells the Hide amounts audit
+        // (which treats a decimal-keypad field as an amount) that it is not one.
+        f.ratePct.input.setAttribute('inputmode', 'decimal');
+        f.ratePct.input.setAttribute('data-plain-number', '');
         f.years.input.setAttribute('inputmode', 'numeric');
         f.ratePct.input.setAttribute('spellcheck', 'false');
         f.years.input.setAttribute('spellcheck', 'false');
-        ['principal', 'monthly', 'ratePct', 'years', 'frequency'].forEach(function (k) {
-          f[k].input.addEventListener('input', update);
-          f[k].input.addEventListener('change', update);
-          fieldsBox.appendChild(f[k].el);
+        // Typing a number (calc-site.js, "Typed numbers"), as on the website: an unfinished number such as "250,"
+        // leaves the last result on screen, so no wrong figure and no message flashes between keystrokes; a real
+        // mistake still shows its message at once. Leaving a field tidies it ("250000.00" becomes "250,000.00")
+        // and runs the numbers, which also shows the message for a number left unfinished.
+        ['principal', 'monthly', 'ratePct', 'years'].forEach(function (k) {
+          var commas = k !== 'ratePct', field = f[k];
+          field.input.addEventListener('input', function () {
+            if (C.classifyAmount(field.text(), commas) === 'partial') return;
+            update();
+          });
+          field.input.addEventListener('change', update);
+          field.input.addEventListener('blur', function () {
+            // A field masked by Hide amounts shows dots, not its text: leave it alone.
+            var text = field.text(), tidy = C.formatAmount(text, commas);
+            if (tidy !== null && (k === 'principal' || k === 'monthly')) {
+              // The money fields tidy to cents, as every money field in the app does (the form kit does this first for what it
+              // reads; this covers what only the website's reader accepts, such as "250 000"), so a second blur changes nothing.
+              var v = C.parseAmount(text, true), cents = Math.round(v * 100);
+              if (Math.abs(v * 100 - cents) < 1e-6 && cents <= 1e12) tidy = K.inputText(cents);
+            }
+            if (tidy !== null && field.input.value.trim() === text && tidy !== field.input.value) field.input.value = tidy;
+            update();
+          });
         });
+        f.frequency.input.addEventListener('input', update);
+        f.frequency.input.addEventListener('change', update);
+        ['principal', 'monthly', 'ratePct', 'years', 'frequency'].forEach(function (k) { fieldsBox.appendChild(f[k].el); });
         var gid = dom.id('cs-timing');
         timingEnd = h('input', { type: 'radio', name: gid, value: 'end', checked: true });
         timingStart = h('input', { type: 'radio', name: gid, value: 'start' });
@@ -193,7 +220,7 @@
         raw.principal = C.parseAmount(f.principal.text(), true);
         raw.monthly = C.parseAmount(f.monthly.text(), true);
         raw.ratePct = C.parseAmount(f.ratePct.text(), false);
-        raw.years = C.parseAmount(f.years.text(), false);
+        raw.years = C.parseAmount(f.years.text(), true);   // as the website reads years
         var errors = C.validate(raw);
         if (errors.ratePct === 'Enter a number.' && f.ratePct.text().indexOf(',') !== -1) errors.ratePct = 'Use a dot for decimals, like 4.5.';
         ['principal', 'monthly', 'ratePct', 'years'].forEach(function (k) {

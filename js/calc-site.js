@@ -88,7 +88,9 @@
         year: m / 12,
         balance: balance,
         contributions: contributions,
-        interest: balance - contributions,
+        // Never below zero: at a 0% rate the balance and the deposits differ by a few billionths of a dollar
+        // in floating point, which would print as "-$0.00" (as for "Compounding adds" below).
+        interest: Math.max(0, balance - contributions),
         simpleBalance: contributions + simpleInterest,
         simpleInterest: simpleInterest
       };
@@ -132,17 +134,62 @@
     return errors;
   }
 
-  /* "12,500.50" or "$12,500" -> 12500.5; "10." -> 10; anything unreadable -> NaN.
-   * With allowCommas false (the rate), a comma is refused rather than dropped, so
-   * "1,5" is never silently read as 15. */
+  /* Typed numbers: the one reader for typing, a scenario link and a saved scenario.
+   *
+   * Accepted: digits with an optional ".", such as 250000, 250000.00, 10. and .5; a leading
+   * "$" ("$250,000"); a trailing "%" ("5%"); spaces anywhere (a pasted " $250,000 " or
+   * "250 000"); and a leading "-" (read as negative, so the field's own limit says so).
+   * The comma rule is STRICT, because a lenient one can mis-read: "1,5" is 1.5 in much of
+   * Europe and "250,00" is 250.00, and a lenient reader would turn them into 15 and 25000.
+   * So a comma must sit in thousands positions (1 to 3 digits, the first not 0, then groups of exactly 3):
+   * "250,000" and "1,234,567.89" read, "250,00", "2,50,000", "0,500" and "1,5" are refused.
+   * With allowCommas false (the rate), any comma is refused, so "1,5" is never read as 15.
+   * Refused: letters ("12k"), "1e3", a second ".", a "$" or "%" anywhere else, "--5".
+   *
+   * Three answers, so a page can tell a mistake from a number that is not finished yet:
+   *   "ok"      a complete number;
+   *   "partial" not a number yet but could become one by typing more: "", "$", "-", ".",
+   *             and a comma group still short ("250,", "250,0", "250,00");
+   *   "bad"     can never become a number by typing more.
+   * A page keeps its last result while the answer is "partial" and shows its message only for "bad". */
+  function readTyped(text, allowCommas) {
+    var s = String(text == null ? "" : text).replace(/[\s​-‍⁠﻿]/g, "");
+    var m = /^(-?)(\$?)(-?)([0-9,.]*)(%?)$/.exec(s), bad = { state: "bad" }, body, digits, n, neg;
+    if (!m || (m[1] && m[3])) return bad;
+    neg = !!(m[1] || m[3]); body = m[4];
+    if (body === "") return m[5] ? bad : { state: "partial" };
+    if (body.indexOf(",") !== -1) {
+      if (allowCommas === false) return bad;
+      if (/^[1-9]\d{0,2}(,\d{3})+(\.\d*)?$/.test(body)) digits = body.replace(/,/g, "");
+      else return !m[5] && /^[1-9]\d{0,2}(,\d{3})*,\d{0,2}$/.test(body) ? { state: "partial" } : bad;
+    } else if (/^(\d+\.?\d*|\.\d+)$/.test(body)) digits = body;
+    else return body === "." && !m[5] ? { state: "partial" } : bad;
+    n = Number(digits);
+    return isFinite(n) ? { state: "ok", value: neg && n !== 0 ? -n : n, digits: digits, neg: neg } : bad;
+  }
+
+  /* "12,500.50" or "$12,500" -> 12500.5; "10." -> 10; "5%" -> 5; anything unreadable, or not finished, -> NaN. */
   function parseAmount(text, allowCommas) {
-    var s = String(text == null ? "" : text);
-    if (allowCommas === false && s.indexOf(",") !== -1) return NaN;
-    var bare = s.replace(/[$%\s]/g, "");
-    if (bare.indexOf(",") !== -1 && !/^-?\d{1,3}(,\d{3})+(\.\d*)?$/.test(bare)) return NaN;
-    var cleaned = bare.replace(/,/g, "");
-    if (cleaned === "") return NaN;
-    return /^-?(\d+\.?\d*|\.\d+)$/.test(cleaned) ? Number(cleaned) : NaN;
+    var r = readTyped(text, allowCommas);
+    return r.state === "ok" ? r.value : NaN;
+  }
+
+  /* "ok", "partial" or "bad" for the text as typed (see above). */
+  function classifyAmount(text, allowCommas) { return readTyped(text, allowCommas).state; }
+
+  /* The text tidied for leaving the field: thousands commas on the whole part (not on a rate),
+   * no "$", "%" or spaces, no leading zeros, a bare "." dropped, and the decimals exactly as typed
+   * ("250000.00" -> "250,000.00", "$250,000" -> "250,000", "5.50%" -> "5.50"). The digits are never
+   * changed, so parseAmount gives the same number before and after. null where the text is not a
+   * complete, non-negative number: the field is then left as typed, and its message stays. */
+  function formatAmount(text, allowCommas) {
+    var r = readTyped(text, allowCommas);
+    if (r.state !== "ok" || r.neg) return null;
+    var dot = r.digits.indexOf("."), whole = dot === -1 ? r.digits : r.digits.slice(0, dot);
+    var frac = dot === -1 ? "" : r.digits.slice(dot + 1);
+    whole = whole.replace(/^0+(?=\d)/, "") || "0";
+    if (allowCommas !== false) whole = whole.replace(/\B(?=(\d{3})+$)/g, ",");
+    return frac === "" ? whole : whole + "." + frac;
   }
 
   /* Growth multiple and the percent beside "Compounding adds". Both are plain ratios
@@ -212,6 +259,8 @@
     calculate: calculate,
     validate: validate,
     parseAmount: parseAmount,
+    classifyAmount: classifyAmount,
+    formatAmount: formatAmount,
     TEXT_CAP: TEXT_CAP,
     growthMultiple: growthMultiple,
     multipleText: multipleText,

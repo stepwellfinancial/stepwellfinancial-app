@@ -21,6 +21,14 @@
 
 /* Results */
 .cs-stale .cs-chart, .cs-stale .cs-tiles, .cs-stale .cs-legend { opacity: .35; }
+/* The loan screen while a number being typed cannot be read yet: the last answer stays, dimmed, so the page does not jump. */
+.cl-loan.cl-stale .cl-body, .cl-loan.cl-stale .cl-wi, .cl-loan.cl-stale .cl-tablecard { opacity: .35; }
+/* Dimming is only a cue, so a line says so, in normal muted text on the inputs card (which is not dimmed). Its space is always
+   reserved (two lines, three on a phone) and only its visibility changes, so nothing moves. visibility:hidden also keeps it out of
+   the reading order while it is not needed. */
+.cl-stale-note { font-size: var(--t-s); line-height: 1.45; color: var(--muted); margin: 10px 0 0; min-height: calc(2 * 1.45em); visibility: hidden; }
+@media (max-width: 639px) { .cl-stale-note { min-height: calc(3 * 1.45em); } }
+.cl-loan.cl-stale .cl-stale-note { visibility: visible; }
 .cs-chart { aspect-ratio: 640 / 480; margin-top: 6px; }
 @media (min-width: 821px) { .cs-chart { aspect-ratio: 640 / 370; } }
 @media (max-width: 525px) { .cs-chart { aspect-ratio: 640 / 600; } }
@@ -103,8 +111,12 @@
 
 /* Loan amortization: the results card comes first, the inputs card beside it on a wide screen */
 .cl-loan { display: grid; gap: var(--s4); }
-.cl-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
-@media (max-width: 1000px) { .cl-grid { grid-template-columns: minmax(0, 1fr); } }
+/* Wide: results over the what-ifs on the left, the inputs on the right. Narrow: results, inputs, what-ifs. */
+.cl-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); grid-template-areas: "res inp" "wi inp"; gap: 16px; align-items: start; }
+.cl-result { grid-area: res; } .cl-inputs { grid-area: inp; } .cl-wi { grid-area: wi; }
+@media (min-width: 1001px) { .cl-inputs { position: sticky; top: 16px; } }
+@media (max-width: 1000px) { .cl-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "res" "inp" "wi"; } }
+.cl-wi[hidden], .cl-tablecard[hidden], .cl-wi-out[hidden], .cl-wi-chartbox[hidden], .cl-tiles[hidden], .cl-wi-text[hidden], .cl-wi-none[hidden], .cl-wi-h3[hidden] { display: none; }
 @media (max-width: 639px) { .cl-grid { gap: 12px; } }
 .cl-msg { font-size: var(--t-m); line-height: 1.6; margin: 8px 0 0; }
 .cl-msg[hidden], .cl-body[hidden] { display: none; }
@@ -123,18 +135,59 @@
 .cl-legend { margin-top: 6px; }
 .cl-sw { width: 14px; height: 12px; border-radius: 2px; }
 .cl-sw-rep { background: var(--ledger); }
-.cl-readout { font-size: var(--t-m); line-height: 1.5; margin: 10px 0 0; overflow-wrap: anywhere; }
-.cl-caption { font-size: var(--t-s); line-height: 1.5; color: var(--muted); margin: 8px 0 0; overflow-wrap: anywhere; }
+.cl-readout { font-size: var(--t-m); line-height: 1.5; margin: 10px 0 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.cl-caption { font-size: var(--t-s); line-height: 1.5; color: var(--muted); margin: 8px 0 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .cl-big { font-size: 36px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 16px 0 10px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 @media (max-width: 639px) { .cl-big { font-size: 30px; } }
-.cl-sentence { font-size: 16px; line-height: 1.6; max-width: 62ch; margin: 0 0 8px; overflow-wrap: anywhere; }
+.cl-sentence { font-size: 16px; line-height: 1.6; max-width: 62ch; margin: 0 0 8px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .cl-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 6px; }
 .cl-link { min-height: 44px; font-size: var(--t-s); }
 .btn.small.cl-reset { min-height: 44px; }
 .cl-disclaimer { margin-top: 4px; }
 .cl-seg { margin: 8px 0 0; }
 .cl-seg button { min-height: 44px; font-size: var(--t-s); }
-.cl-scroll { max-height: 480px; overflow: auto; margin-top: 8px; border: 1px solid var(--line); border-radius: var(--r-s); }
+/* The payment table is large: as tall as 70% of the window, up to 640 px, and as wide as the screen. */
+.cl-scroll { max-height: min(70vh, 640px); overflow: auto; margin-top: 8px; border: 1px solid var(--line); border-radius: var(--r-s); }
+.cl-scroll-s { max-height: 320px; }
+.cl-scroll-s .cl-table th, .cl-scroll-s .cl-table td { padding: 6px 8px; }
+@media (max-width: 639px) {
+  .cl-scroll-s .cl-table th, .cl-scroll-s .cl-table td { padding: 6px 4px; }
+  .cl-tablecard .cl-table th, .cl-tablecard .cl-table td { padding: 8px 8px; }
+}
+.cl-how h2 { margin-bottom: 8px; }
+.cl-tablecard .cl-table { font-size: var(--t-s); }
+.cl-tablecard .cl-table th, .cl-tablecard .cl-table td { padding: 8px 12px; }
+.cl-how .cs-body { margin-top: 8px; }
+.cl-how .cs-body:first-of-type { margin-top: 0; }
+.cl-wi-lead { font-size: var(--t-m); line-height: 1.6; max-width: 70ch; margin: 0 0 8px; font-variant-numeric: tabular-nums; }
+
+/* What-ifs: one choice, its figures, its graphic */
+.cl-opts { border: 0; margin: 4px 0 0; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 12px; }
+.cl-opts legend { font-size: var(--t-s); font-weight: 600; padding: 0; margin-bottom: 6px; }
+.cl-opts label { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 10px; border-radius: var(--r-s); font-size: var(--t-s); line-height: 1.35; cursor: pointer; }
+.cl-opts label:has(input:checked) { background: var(--ledger-tint); }
+.cl-opts input { width: 22px; height: 22px; margin: 0; accent-color: var(--ledger); flex: none; }
+.cl-opts input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.cl-wi-out { margin-top: 12px; }
+.cl-wi-h3 { font-size: var(--t-m); line-height: 1.3; margin: 0 0 8px; }
+.cl-wi-none { font-size: var(--t-m); line-height: 1.6; color: var(--muted); margin: 0; }
+.cl-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 12px 0; }
+.cl-tiles > div { background: var(--panel-2); border-radius: var(--r-s); padding: 12px; min-width: 0; }
+.cl-tiles dt { color: var(--muted); font-size: var(--t-s); line-height: 1.3; }
+.cl-tiles dd { margin: 4px 0 0; font-size: 18px; line-height: 1.3; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cl-tiles dd.cl-more { margin-top: 2px; font-size: var(--t-s); font-weight: 400; color: var(--muted); }
+.cl-wi-chartbox { margin-top: 4px; }
+.cl-wi-chart { min-height: 1px; }
+.cl-wi-chart svg { display: block; max-width: 100%; overflow: visible; }
+.cl-wi-svg .cl-wi-ln { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.cl-wi-svg .cl-wi-ln-plan { stroke: var(--ledger); stroke-width: 3; }
+.cl-wi-svg .cl-wi-ln-plain { stroke: var(--compare); stroke-width: 3.5; stroke-dasharray: 1 6; }
+.cl-wi-svg .cl-wi-gap { fill: var(--ledger); opacity: .22; stroke: none; }
+.cl-wi-svg .cl-wi-dot { fill: var(--ledger); }
+.cl-key { display: inline-block; flex: none; width: 18px; }
+.cl-key-plan { height: 3px; border-radius: 2px; background: var(--ledger); }
+.cl-key-plain { height: 0; border-top: 3px dotted var(--compare); }
+.cl-wi-bal { margin-top: 6px; }
 .cl-scroll:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .cl-table { font-size: var(--t-s); }
 .cl-table thead th { position: sticky; top: 0; z-index: 1; background: var(--panel); white-space: normal; vertical-align: bottom; box-shadow: 0 1px 0 var(--line); }
