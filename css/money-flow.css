@@ -1,0 +1,122 @@
+/* money-flow.css: styles for the "How it fits together" graphic (money-flow.js).
+ * Every rule is scoped to .mf (or .mf-section on the home page), so nothing
+ * here reaches the rest of a page. One dark look on purpose: the graphic is a
+ * dark panel in both the dark and the paper themes, so each text colour is set
+ * here and none is taken from the page.
+ * Colours are the identity tokens, dark column: void #0a0f0d, paper #0f1412,
+ * panel #171e1b, panel-2 #17211d (the You pill), ink #e8eeea, muted #9aa8a0, ledger-tint #163126 (its opaque form),
+ * contrib #7f9a8c, line #2a3631 and line-hi #3d4d46 (dark-only borders). The
+ * destination, ball and pill colours are the recorded brand overrides.
+ * Type is the identity system stack, with tabular figures on every figure.
+ * The same file, byte for byte, ships on stepwellfinancial.com and in the app
+ * (see money-flow.sha256). */
+.mf {
+  color-scheme: dark;
+  --mf-void: #0a0f0d; --mf-paper: #0f1412; --mf-panel: #171e1b; --mf-line: #2a3631; --mf-line-hi: #3d4d46;
+  --mf-panel2: #17211d; --mf-ink: #e8eeea; --mf-muted: #9aa8a0; --mf-tint: #163126; --mf-save: #3ccf8e; --mf-contrib: #7f9a8c;
+  --mf-spend: #c9a45c; --mf-bank: #b9c7c0; --mf-holo: #6fb4ff;
+  --mf-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mf-num: var(--mf-body);
+  background: var(--mf-void); color: var(--mf-ink);
+  font: 16px/1.6 var(--mf-body);
+  font-variant-numeric: tabular-nums;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.mf, .mf * { box-sizing: border-box; }
+.mf-inset { border-radius: 16px; }
+.mf-wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 22px; }
+
+/* The home page section: a heading above the graphic, on the same dark band. */
+.mf-section { background: #0a0f0d; border-bottom: 1px solid #2a3631; }
+.mf-section-head { max-width: 1012px; margin: 0 auto; padding: 40px 16px 0; }
+.mf-section-head h2 { margin: 0; font: 700 clamp(26px, 4.4vw, 34px)/1.15 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #e8eeea; }
+.mf-section .mf { padding-top: 20px; }
+.mf-fallback { max-width: 1012px; margin: 0 auto; padding: 20px 16px 40px; color: #9aa8a0; font-size: 16px; line-height: 1.6; }
+.mf-fallback p { margin: 0 0 10px; color: #9aa8a0; }
+.mf-fallback ul { margin: 0 0 10px; padding-left: 20px; color: #e8eeea; }
+
+.mf-title { font: 700 clamp(28px, 5.2vw, 46px)/1.05 var(--mf-body); letter-spacing: -.01em; margin: 0; text-wrap: balance; color: var(--mf-ink); }
+.mf-lede { margin: 10px 0 0; max-width: 56ch; color: var(--mf-muted); font-size: 17px; }
+.mf-stage { background: linear-gradient(180deg, var(--mf-panel), var(--mf-paper)); border: 1px solid var(--mf-line); border-radius: 16px; padding: 14px 10px 10px; min-width: 0; }
+.mf-bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; padding: 2px 8px 8px; }
+.mf-key { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 16px/1.6 var(--mf-body); color: var(--mf-muted); }
+.mf-ctl { display: flex; flex-wrap: wrap; gap: 8px; }
+.mf-ctl button { font: 600 13px var(--mf-body); color: var(--mf-ink); background: var(--mf-void); border: 1px solid var(--mf-line-hi); border-radius: 999px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+.mf-ctl button[aria-pressed="true"] { border-color: var(--mf-save); color: var(--mf-save); }
+.mf-ctl button:hover { border-color: var(--mf-save); }
+.mf-ctl button:disabled { opacity: .55; cursor: default; }
+.mf button:focus-visible, .mf .mf-node:focus-visible { outline: 2px solid var(--mf-save); outline-offset: 3px; }
+svg.mf-flow { display: block; width: 100%; height: auto; max-height: 78vh; }
+
+.mf-path { fill: none; stroke-width: 2; stroke-linecap: round; opacity: .28; transition: opacity .2s, stroke-width .2s; }
+.mf-path.mf-spend { stroke: var(--mf-spend); }
+.mf-path.mf-save { stroke: var(--mf-save); }
+.mf-path.mf-bank { stroke: var(--mf-bank); }
+.mf-path.mf-pay { stroke: var(--mf-holo); stroke-width: 3.5; filter: drop-shadow(0 0 7px #6fb4ffcc); }
+.mf-path.mf-on { opacity: .9; stroke-width: 3; }
+.mf-dim .mf-path:not(.mf-on) { opacity: .1; }
+
+.mf-node { cursor: pointer; }
+.mf-hitbox { fill: transparent; }
+.mf-node circle.mf-c { fill: var(--mf-paper); stroke-width: 2.5; transition: stroke-width .15s, fill .15s; }
+.mf-node:hover circle.mf-c, .mf-node.mf-sel circle.mf-c { fill: var(--mf-tint); stroke-width: 4; }
+.mf-node.mf-hit circle.mf-c { stroke-width: 5.5; fill: var(--mf-tint); }
+.mf-node text { fill: var(--mf-ink); font: 700 15px var(--mf-body); text-anchor: middle; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.mf-node text.mf-amt { fill: var(--mf-muted); font: 500 13px var(--mf-num); font-variant-numeric: tabular-nums; }
+.mf-node.mf-save circle.mf-c { stroke: var(--mf-save); }
+.mf-node.mf-spend circle.mf-c { stroke: var(--mf-spend); }
+.mf-node.mf-bank circle.mf-c { stroke: var(--mf-bank); }
+.mf-hub circle.mf-ring { fill: none; stroke: var(--mf-save); stroke-opacity: .5; stroke-width: 1.5; stroke-dasharray: 5 9; }
+.mf-spin { transform-box: fill-box; transform-origin: center; animation: mf-spin 26s linear infinite; }
+.mf-spin2 { transform-box: fill-box; transform-origin: center; animation: mf-spin 40s linear infinite reverse; }
+@keyframes mf-spin { to { transform: rotate(360deg); } }
+.mf-hub text { fill: var(--mf-ink); font: 700 19px var(--mf-body); text-anchor: middle; letter-spacing: .02em; }
+.mf-hub text.mf-sublabel { fill: var(--mf-muted); font: 500 14px var(--mf-body); letter-spacing: .02em; }
+.mf-you rect:not(.mf-hitbox) { fill: var(--mf-panel2); stroke: var(--mf-holo); stroke-width: 2.5; filter: drop-shadow(0 0 10px #6fb4ff8c); }
+.mf-you text { fill: var(--mf-holo); font: 700 15px var(--mf-body); text-anchor: middle; letter-spacing: .02em; }
+.mf-you text.mf-amt { fill: var(--mf-ink); font: 500 13px var(--mf-num); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.mf-dot { fill: var(--mf-save); }
+.mf-dot.mf-spend { fill: var(--mf-spend); }
+.mf-dot.mf-bank { fill: var(--mf-bank); }
+.mf-dot.mf-pay { fill: #bfdcff; }
+
+/* The vertical layout, 640 px or narrower: drawn at 1:1, so sizes here are real pixels. */
+.mf-route { fill: none; stroke: none; }
+.mf-path.mf-trunk { fill: none; stroke: var(--mf-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .5; }
+.mf-rowbg { fill: transparent; }
+.mf-node:hover .mf-rowbg, .mf-node.mf-sel .mf-rowbg, .mf-node.mf-hit .mf-rowbg { fill: var(--mf-tint); }
+.mf-grp { fill: var(--mf-muted); font: 500 16px var(--mf-body); }
+svg.mf-flow.mf-narrow { height: auto; max-height: none; overflow: visible; }
+.mf-narrow .mf-node text { font-size: 16px; text-anchor: start; }
+.mf-narrow .mf-node text.mf-amt { font-size: 16px; text-anchor: end; }
+.mf-narrow .mf-hub text { font-size: 19px; text-anchor: middle; }
+.mf-narrow .mf-hub text.mf-sublabel { font-size: 14px; }
+.mf-narrow .mf-you text { font-size: 15px; text-anchor: middle; }
+.mf-narrow .mf-you text.mf-amt { font-size: 14px; text-anchor: middle; }
+@media (max-width: 640px) { .mf-bar { flex-direction: column; align-items: flex-start; } }
+
+.mf-cap { margin: 6px 8px 4px; min-height: 5.2em; padding: 12px 14px; border: 1px solid var(--mf-line); border-radius: 12px; background: var(--mf-void); display: grid; gap: 3px; }
+.mf-cap b { font: 700 15px var(--mf-body); letter-spacing: .02em; color: var(--mf-ink); font-variant-numeric: tabular-nums; }
+.mf-cap span { color: var(--mf-muted); font-size: 16px; line-height: 1.6; }
+.mf-grow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 18px; align-items: center; }
+@media (max-width: 720px) { .mf-grow { grid-template-columns: minmax(0, 1fr); } }
+.mf-sub { font: 700 22px/1.15 var(--mf-body); margin: 0 0 6px; color: var(--mf-ink); }
+.mf-hz { display: flex; gap: 6px; margin: 12px 0 10px; flex-wrap: wrap; }
+.mf-hz button { font: 600 13px var(--mf-body); color: var(--mf-muted); background: none; border: 1px solid var(--mf-line-hi); border-radius: 999px; padding: 0 14px; min-height: 44px; cursor: pointer; }
+.mf-hz button[aria-pressed="true"] { color: var(--mf-void); background: var(--mf-save); border-color: var(--mf-save); }
+.mf-big { font: 500 clamp(34px, 6vw, 50px)/1 var(--mf-num); color: var(--mf-save); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.mf-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.mf-sm { font: 500 13px var(--mf-num); color: var(--mf-muted); font-variant-numeric: tabular-nums; }
+.mf-sm b { color: var(--mf-contrib); font-weight: 500; }
+.mf-chart { min-width: 0; }
+.mf-chart svg { display: block; width: 100%; height: auto; }
+.mf-chart text { fill: var(--mf-muted); font: 500 12px var(--mf-num); font-variant-numeric: tabular-nums; }
+.mf-note { font-size: 16px; line-height: 1.6; color: var(--mf-muted); margin: 0; max-width: 78ch; }
+.mf-note-a { margin: 8px 8px 4px; }
+.mf-note-b { margin-top: 10px; }
+
+/* Less motion: the system setting, or the app's own Less motion setting. */
+@media (prefers-reduced-motion: reduce) { .mf-spin, .mf-spin2 { animation: none; } }
+.sw-less-motion .mf-spin, .sw-less-motion .mf-spin2 { animation: none; }
