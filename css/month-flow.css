@@ -1,0 +1,50 @@
+/* month-flow.css: styles for "The month, day by day" (month-flow.js).
+ * Built on money-flow.css, which must load first: the host carries the .mf class, so the
+ * tokens (--mf-*), the dark panel and the shared pieces (.mf-stage, .mf-bar, .mf-ctl,
+ * .mf-cap, .mf-chart, .mf-lede, .mf-note, .mf-sr) come from there. Like the live graphic
+ * it is a dark panel in both the dark and the Paper themes. Colours: gold is spending,
+ * gray is checking, green is saving. No animation, so nothing to switch off for less
+ * motion. Every rule is scoped to .mm. */
+.mm-host { margin-top: 20px; }
+.mm-inset { border-radius: 16px; }
+.mm-title { font: 700 clamp(26px, 4.6vw, 36px)/1.1 var(--mf-body); letter-spacing: -.01em; margin: 0; color: var(--mf-ink); text-wrap: balance; }
+
+/* The day slider and Play */
+.mm-day { width: 100%; min-width: 0; display: grid; gap: 2px; }
+@media (min-width: 641px) { .mm-day { width: auto; flex: 1 1 280px; } }
+.mm-day label { font: 600 16px/1.4 var(--mf-body); color: var(--mf-ink); }
+.mm-slide { display: flex; align-items: center; gap: 12px; }
+.mm input[type="range"] { flex: 1 1 auto; min-width: 0; height: 44px; margin: 0; padding: 0; background: transparent; accent-color: var(--mf-save); cursor: pointer; }
+.mm input[type="range"]:focus-visible { outline: 2px solid var(--mf-save); outline-offset: 3px; }
+.mm-out { flex: none; min-width: 6ch; font: 700 18px var(--mf-num); color: var(--mf-ink); font-variant-numeric: tabular-nums; }
+.mm .mf-ctl button { width: 140px; }   /* one width for Play the month and Pause, so nothing moves */
+.mm-key { margin: 0 8px 10px; max-width: 78ch; font: 400 16px/1.6 var(--mf-body); color: var(--mf-muted); }
+.mm-note { margin: 4px 0 0; }
+.mm-today b, .mm-today span { overflow-wrap: anywhere; }
+.mm-today { min-height: 6.4em; }
+@media (max-width: 640px) { .mm-today { min-height: 9.5em; } }   /* the tallest day (day 1, three lines, wrapped) fits at 320 px */
+
+/* Rows and chart: side by side when there is room */
+.mm-body { display: grid; gap: 18px; padding: 4px 8px 4px; min-width: 0; }
+@media (min-width: 900px) { .mm-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.mm-rows, .mm-fig { min-width: 0; margin: 0; }
+.mm-grp { margin: 10px 0 2px; font: 500 16px/1.6 var(--mf-body); color: var(--mf-muted); }
+.mm-grp:first-child { margin-top: 0; }
+.mm-list { list-style: none; margin: 0; padding: 0; }
+.mm-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; padding: 6px 0 8px; }
+.mm-lab { font: 700 16px var(--mf-body); color: var(--mf-ink); }
+.mm-amt { font: 500 16px var(--mf-num); color: var(--mf-muted); font-variant-numeric: tabular-nums; text-align: right; }
+.mm-bar-svg { grid-column: 1 / -1; display: block; width: 100%; height: 12px; border-radius: 6px; overflow: hidden; background: var(--mf-line-hi); }
+.mm-fill.mm-spend { fill: var(--mf-spend); }
+.mm-fill.mm-bank { fill: var(--mf-bank); }
+.mm-fill.mm-save { fill: var(--mf-save); }
+
+/* The step chart */
+.mm-cap { margin: 0 0 6px; font: 700 16px/1.4 var(--mf-body); color: var(--mf-ink); }
+.mm-chart text { font-size: 13px; }
+.mm-grid { stroke: var(--mf-line); stroke-width: 1; }
+.mm-faint, .mm-solid { fill: none; stroke: var(--mf-bank); stroke-linejoin: miter; }
+.mm-faint { stroke-width: 2; opacity: .3; }
+.mm-solid { stroke-width: 3; }
+.mm-dot { fill: var(--mf-bank); stroke: var(--mf-void); stroke-width: 2; }
+.mm-chart text.mm-pt { fill: var(--mf-ink); font-weight: 700; paint-order: stroke; stroke: var(--mf-void); stroke-width: 4px; stroke-linejoin: round; }

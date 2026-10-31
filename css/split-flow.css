@@ -1,0 +1,44 @@
+/* split-flow.css: styles for "What if the example split changed?" (split-flow.js).
+ * Built on money-flow.css, which must load first: the host carries the .mf class, so the
+ * tokens (--mf-*), the dark panel and the shared pieces (.mf-stage, .mf-ctl, .mf-chart,
+ * .mf-lede, .mf-big, .mf-sr) come from there. Like the live graphic it is a dark panel in
+ * both the dark and the Paper themes. A neutral look: nothing changes colour with the
+ * amount. The three bar colours are the live graphic's category tokens and only name the
+ three parts of the month. No animation.
+ * Every rule is scoped to .sf. */
+.sf-host { margin-top: 20px; }
+.sf-inset { border-radius: 16px; }
+.sf-title { font: 700 clamp(26px, 4.6vw, 36px)/1.1 var(--mf-body); letter-spacing: -.01em; margin: 0; color: var(--mf-ink); text-wrap: balance; }
+.sf-stage { display: grid; gap: 14px; padding: 16px 14px 14px; }
+.sf-line, .sf-key { margin: 0; max-width: 78ch; font: 400 16px/1.6 var(--mf-body); color: var(--mf-muted); overflow-wrap: anywhere; }
+.sf-none { color: var(--mf-ink); }
+
+/* The slider and its way back */
+.sf-slide { display: grid; gap: 2px; min-width: 0; }
+.sf-label { font: 600 16px/1.4 var(--mf-body); color: var(--mf-ink); font-variant-numeric: tabular-nums; }
+@media (max-width: 380px) { .sf-label { min-height: 2.8em; } }   /* two lines reserved, so the slider never moves when the label wraps */
+.sf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.sf-row .mf-ctl { flex: none; }
+.sf input[type="range"] { flex: 1 1 240px; min-width: 0; height: 44px; margin: 0; padding: 0; background: transparent; accent-color: var(--mf-ink); cursor: pointer; }
+.sf input[type="range"]:focus-visible { outline: 2px solid var(--mf-save); outline-offset: 3px; }
+
+/* The bar, the figure and the chart: side by side when there is room */
+.sf-body { display: grid; gap: 18px; min-width: 0; }
+@media (min-width: 900px) { .sf-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.sf-left { display: grid; gap: 12px; min-width: 0; }
+.sf-fig { margin: 0; min-width: 0; display: grid; gap: 8px; }
+.sf-bar { display: block; width: 100%; height: 28px; border-radius: 8px; overflow: hidden; background: var(--mf-line-hi); }
+.sf-spend { fill: var(--mf-spend); }
+.sf-save { fill: var(--mf-save); }
+.sf-bank { fill: var(--mf-bank); }
+.sf-ballab { display: block; font: 600 16px/1.4 var(--mf-body); color: var(--mf-ink); }
+.sf-big { color: var(--mf-ink); }
+
+/* The chart: one neutral solid line, one neutral dashed line */
+.sf-cap { margin: 0; font: 700 16px/1.4 var(--mf-body); color: var(--mf-ink); }
+.sf-chart text { font-size: 13px; }
+.sf-grid { stroke: var(--mf-line); stroke-width: 1; }
+.sf-ref, .sf-line-chosen { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.sf-ref { stroke: var(--mf-muted); stroke-width: 2; stroke-dasharray: 6 5; }
+.sf-line-chosen { stroke: var(--mf-ink); stroke-width: 3; }
+.sf-dot { fill: var(--mf-ink); stroke: var(--mf-void); stroke-width: 2; }

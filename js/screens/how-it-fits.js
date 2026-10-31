@@ -14,10 +14,18 @@
       var host = h('div', { class: 'mf-host' });
       wrap.appendChild(host);
       var flow = window.MoneyFlow.mount(host, { heading: 'h2', className: 'mf-inset' });
+      // A second section under the graphic: the same example month, day by day (js/month-flow.js).
+      var monthHost = h('div', { class: 'mm-host' });
+      wrap.appendChild(monthHost);
+      var month = window.MonthFlow.mount(monthHost, { heading: 'h2', className: 'mm-inset' });
+      // A third section: what if the example split changed (js/split-flow.js). Fixed example numbers only.
+      var splitHost = h('div', { class: 'sf-host' });
+      wrap.appendChild(splitHost);
+      var split = window.SplitFlow.mount(splitHost, { heading: 'h2', className: 'sf-inset' });
       return {
         // Nothing here comes from the store, so a store change needs no repaint.
         onStoreChange: function () { return true; },
-        destroy: function () { flow.destroy(); }
+        destroy: function () { flow.destroy(); month.destroy(); split.destroy(); }
       };
     }
   });
