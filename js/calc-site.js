@@ -162,7 +162,7 @@
       if (allowCommas === false) return bad;
       if (/^[1-9]\d{0,2}(,\d{3})+(\.\d*)?$/.test(body)) digits = body.replace(/,/g, "");
       else return !m[5] && /^[1-9]\d{0,2}(,\d{3})*,\d{0,2}$/.test(body) ? { state: "partial" } : bad;
-    } else if (/^(\d+\.?\d*|\.\d+)$/.test(body)) digits = body;
+    } else if (/^(\d+(\.\d*)?|\.\d+)$/.test(body)) digits = body;   // not /^(\d+\.?\d*|\.\d+)$/: that one is quadratic on a long run of digits then a stray "." (security audit L1)
     else return body === "." && !m[5] ? { state: "partial" } : bad;
     n = Number(digits);
     return isFinite(n) ? { state: "ok", value: neg && n !== 0 ? -n : n, digits: digits, neg: neg } : bad;
