@@ -209,8 +209,8 @@
 
       var more = (SW.siteTools || []).filter(function (t) { return t.calc; });
       if (more.length) {
-        wrap.appendChild(h('section', { class: 'card cs-more', 'aria-labelledby': 'cs-more-h' }, [
-          h('h2', { id: 'cs-more-h', class: 'cs-h3', text: 'More calculators on the website' }),
+        wrap.appendChild(h('section', { class: 'card cs-site', 'aria-labelledby': 'cs-site-h' }, [
+          h('h2', { id: 'cs-site-h', class: 'cs-h3', text: 'More calculators on the website' }),
           h('p', { class: 'cs-body', text: 'These open on stepwellfinancial.com in a new tab. They are not part of the app.' }),
           h('ul', { role: 'list' }, more.map(function (t) {
             return h('li', {}, [
