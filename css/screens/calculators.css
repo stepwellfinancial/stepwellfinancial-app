@@ -194,3 +194,6 @@
 .cl-table tbody th { font-weight: 400; text-align: left; }
 .cl-table .cl-total th, .cl-table .cl-total td { font-weight: 700; border-top: 2px solid var(--ink); }
 @media (prefers-reduced-motion: reduce) { .cl-bar, .cs-switch button { transition: none; } }
+.cs-more { display: grid; gap: var(--s2); }
+.cs-more ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.cs-more li a { font-weight: 600; }

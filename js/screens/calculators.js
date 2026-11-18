@@ -207,6 +207,20 @@
         h('p', { class: 'band-tools', text: 'The calculators run in your browser. What you type is not sent to us. No account needed.' })
       ]));
 
+      var more = (SW.siteTools || []).filter(function (t) { return t.calc; });
+      if (more.length) {
+        wrap.appendChild(h('section', { class: 'card cs-more', 'aria-labelledby': 'cs-more-h' }, [
+          h('h2', { id: 'cs-more-h', class: 'cs-h3', text: 'More calculators on the website' }),
+          h('p', { class: 'cs-body', text: 'These open on stepwellfinancial.com in a new tab. They are not part of the app.' }),
+          h('ul', { role: 'list' }, more.map(function (t) {
+            return h('li', {}, [
+              h('a', { href: t.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': t.title + ', opens on the website in a new tab', text: t.title }),
+              h('span', { class: 'cs-body', text: ' ' + t.text })
+            ]);
+          }))
+        ]));
+      }
+
       wrap.appendChild(h('section', { class: 'card' }, [
         h('p', {}, ['Want to keep your own figures in one place? The app can save them, only on this device. ', h('a', { href: '#/welcome', text: 'See how the app works' })])
       ]));

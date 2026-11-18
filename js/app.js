@@ -76,6 +76,12 @@
       var ul = h('ul', { role: 'list' });
       items.forEach(function (r) {
         ul.appendChild(h('li', {}, h('a', { href: href(r), 'data-path': r.path }, [icon(r.icon), h('span', { text: r.title })])));
+        if (r.path === 'calculators') {        // website tools that have their own item, right after Calculators (js/routes.js SW.siteTools)
+          (SW.siteTools || []).filter(function (t) { return t.rail; }).forEach(function (t) {
+            ul.appendChild(h('li', {}, h('a', { href: t.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': t.title + ', opens on the website in a new tab' },
+              [icon(t.icon), h('span', { text: t.title })])));
+          });
+        }
       });
       wrap.appendChild(ul);
     });

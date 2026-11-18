@@ -41,4 +41,16 @@
   ];
 
   SW.routes = ALL.filter(function (r) { return !r.flag || (SW.flags && SW.flags[r.flag] === true); });
+
+  /* Tools that live on the website, stepwellfinancial.com. The app only LINKS to them (a plain link that opens a new tab); no code,
+     data or request of theirs is loaded into the app. rail: also an item in the left navigation, after Calculators.
+     calc: also listed on the Calculators screen. */
+  SW.siteTools = [
+    { title: 'Retirement analysis', url: 'https://stepwellfinancial.com/retirement-analysis/', icon: 'growth', rail: true, calc: false,
+      text: 'An illustration of how savings and income might hold up in 500 simulated runs built from past market returns. Not a prediction.' },
+    { title: 'RMD calculator', url: 'https://stepwellfinancial.com/rmd-calculator/', icon: 'cal', rail: false, calc: true,
+      text: 'See this year\u2019s required minimum distribution and a year-by-year table from the IRS Uniform Lifetime Table.' },
+    { title: 'Option modeler', url: 'https://stepwellfinancial.com/options-calculator/option-modeler/', icon: 'grid', rail: false, calc: true,
+      text: 'Pick an options strategy, type your own numbers, and see what it would pay at expiry: maximum loss, maximum profit and break-even. Not a prediction.' }
+  ];
 })();
