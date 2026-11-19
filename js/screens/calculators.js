@@ -39,8 +39,71 @@
       // keeps nothing on screen and nothing in the address (no URL state).
       var cbox = h('div', { class: 'cs-calc' });          // the compound interest calculator
       var loan = SW.loanCalculator.create(ctx);           // the loan amortization calculator
-      var which = SW.loanCalculator.recall().which === 'loan' ? 'loan' : 'compound';
+      // The Option modeler: the website's own page code (js/options-modeler.js, unchanged) wires the skeleton parked in
+      // index.html (#om-root). This screen only moves that skeleton into the Options tab while it is showing and puts it
+      // back in the park when the screen is left, so the modeler's own listeners always find their elements.
+      var obox = h('div', { class: 'cs-opt-box' });
+      var omRoot = document.getElementById('om-root'), omPark = document.getElementById('om-park');
+      var omWatch = null;
+      // The lessons (js/options-learn.js, from the website's own learn pages) are a second view inside the tab.
+      var learn = null, lbox = null, subBtns = null, view = 'modeler';
+      function setView(v, user) {
+        view = v;
+        omRoot.hidden = v !== 'modeler';
+        if (lbox) lbox.hidden = v !== 'learn';
+        if (subBtns) Object.keys(subBtns).forEach(function (k) { subBtns[k].setAttribute('aria-pressed', k === v ? 'true' : 'false'); });
+        if (v === 'modeler') setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);   // the chart is drawn at the box's width
+        if (user) ctx.app.announce(v === 'learn' ? 'Options lessons' : 'Option modeler');
+      }
+      if (omRoot) {
+        // The tab's own heading, as the other calculators have: the modeler's headings below it are h3.
+        obox.appendChild(h('h2', { id: 'cs-opt-h', class: 'cs-h2' }, [dom.icon('payoff', 'cl-ico'), 'Option modeler']));
+        if (SW.optionsLearn) {
+          learn = SW.optionsLearn.create(ctx, { toModeler: function () { setView('modeler', true); } });
+          lbox = h('div', { class: 'cs-learn-box' }, learn.el);
+          subBtns = {};
+          var subEl = h('div', { class: 'seg cs-subswitch', role: 'group', 'aria-label': 'Options' }, [['modeler', 'Option modeler'], ['learn', 'Learn']].map(function (o) {
+            var b = h('button', { type: 'button', 'aria-pressed': 'false', text: o[1] });
+            b.addEventListener('click', function () { if (view !== o[0]) setView(o[0], true); });
+            subBtns[o[0]] = b;
+            return b;
+          }));
+          obox.appendChild(h('div', { class: 'cs-switch-row' }, subEl));
+        }
+        obox.appendChild(omRoot);
+        if (lbox) obox.appendChild(lbox);
+        // The modeler's "Learn about this strategy" link is a website path. Until the in-app lessons are added, send it to the
+        // website page in a new tab (same rule as the card links below).
+        // Found inside the skeleton itself: the screen is not in the page yet while it is being built, so document.getElementById
+        // would find nothing here (this was why the first versions' link fix never took effect).
+        var omLearn = omRoot.querySelector('#om-learn');
+        if (omLearn && window.MutationObserver) {
+          var fixLinks = function () {
+            Array.prototype.forEach.call(omLearn.querySelectorAll('a[href^="/options-calculator/"]'), function (a) {
+              a.setAttribute('href', 'https://stepwellfinancial.com' + a.getAttribute('href'));
+              a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer');
+            });
+          };
+          omWatch = new MutationObserver(fixLinks); omWatch.observe(omLearn, { childList: true, subtree: true }); fixLinks();
+        }
+        // Belt and braces: whatever the observer has or has not done yet, a click on that link always opens the website page in a
+        // new tab (the app is on its own address, so the website's relative path would not exist here).
+        if (omLearn) omLearn.addEventListener('click', function (e) {
+          var a = e.target && e.target.closest ? e.target.closest('a') : null, p;
+          if (!a) return;
+          p = String(a.getAttribute('href') || '').replace(/^https:\/\/stepwellfinancial\.com/, '');
+          if (p.indexOf('/options-calculator/') !== 0) return;
+          e.preventDefault();
+          var slug = learn ? SW.optionsLearn.hrefSlug(p) : null;
+          if (slug && learn.has(slug)) { learn.show(slug); setView('learn', false); return; }   // the lesson opens inside the app
+          window.open('https://stepwellfinancial.com' + p, '_blank', 'noopener,noreferrer');
+        });
+        setView('modeler', false);
+      }
+      var recalled = SW.loanCalculator.recall().which;
+      var which = recalled === 'loan' ? 'loan' : (recalled === 'options' && omRoot ? 'options' : 'compound');
       var SWITCH = [['compound', 'Compound interest', 'growth'], ['loan', 'Loan amortization', 'house']];
+      if (omRoot) SWITCH.push(['options', 'Option modeler', 'payoff']);
       var switchBtns = {};
       var switchEl = h('div', { class: 'seg cs-switch', role: 'group', 'aria-label': 'Calculator' }, SWITCH.map(function (o) {
         var b = h('button', { type: 'button', 'aria-pressed': 'false' }, [dom.icon(o[2], 'cl-ico'), h('span', { text: o[1] })]);
@@ -51,14 +114,18 @@
       wrap.appendChild(h('div', { class: 'cs-switch-row' }, switchEl));
       wrap.appendChild(cbox);
       wrap.appendChild(loan.el);
+      wrap.appendChild(obox);
       function pick(w, user) {
         which = w;
         SW.loanCalculator.remember({ which: w });
         cbox.hidden = w !== 'compound';
         loan.el.hidden = w !== 'loan';
+        obox.hidden = w !== 'options';
         SWITCH.forEach(function (o) { switchBtns[o[0]].setAttribute('aria-pressed', o[0] === w ? 'true' : 'false'); });
         if (w === 'compound' && chartCtl) chartCtl.redraw(); else if (w === 'loan') loan.shown();
-        if (user) ctx.app.announce(w === 'loan' ? 'Loan amortization' : 'Compound interest');
+        // The modeler draws its chart at the width of its box, which is zero while hidden: its own resize listener redraws it.
+        else if (w === 'options') setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);   // after the screen is in the page
+        if (user) ctx.app.announce(w === 'loan' ? 'Loan amortization' : (w === 'options' ? 'Option modeler' : 'Compound interest'));
       }
 
       // ---------- Compound interest ----------
@@ -426,7 +493,11 @@
       return {
         // What was typed is not stored, so a change elsewhere (Hide amounts) redraws the figures in place.
         onStoreChange: function (ev) { if (ev && ev.stores && ev.stores.indexOf('settings') >= 0) { update(); loan.settingsChanged(); } return true; },
-        destroy: function () { if (chartCtl) chartCtl.destroy(); loan.destroy(); }
+        destroy: function () {
+          if (chartCtl) chartCtl.destroy(); loan.destroy();
+          if (omWatch) omWatch.disconnect();
+          if (omRoot && omPark) omPark.appendChild(omRoot);   // back in the park, so the modeler's listeners still find #om-chart
+        }
       };
     }
   });

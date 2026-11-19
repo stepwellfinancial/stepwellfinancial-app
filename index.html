@@ -27,6 +27,8 @@
 <link rel="stylesheet" href="css/screens/onboarding.css">
 <link rel="stylesheet" href="css/screens/welcome.css">
 <link rel="stylesheet" href="css/screens/calculators.css">
+<link rel="stylesheet" href="css/screens/options.css">
+<link rel="stylesheet" href="css/screens/options-learn.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -40,6 +42,7 @@
   <symbol id="i-budget" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M3.5 10h17M8 15h3"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 3.5v4M16 3.5v4M4 10h16"/></symbol>
   <symbol id="i-goal" viewBox="0 0 24 24"><path d="M4 19h4v-4h4v-4h4V7h4"/></symbol>
+  <symbol id="i-payoff" viewBox="0 0 24 24"><path d="M3.5 17h7.5l9.5-10"/></symbol>
   <symbol id="i-whatif" viewBox="0 0 24 24"><path d="M4 18c4-1 6-9 9-9s3 5 7 4"/><path d="M4 18c5 0 9-3 16-10" stroke-dasharray="2 3"/></symbol>
   <symbol id="i-learn" viewBox="0 0 24 24"><path d="M4 7.5 12 4l8 3.5-8 3.5z"/><path d="M7 9.5V15c3 2.5 7 2.5 10 0V9.5"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.5M12 18v2.5M3.5 12H6M18 12h2.5M6 6l1.8 1.8M16.2 16.2 18 18M6 18l1.8-1.8M16.2 7.8 18 6"/></symbol>
@@ -108,6 +111,109 @@
 
 <p class="sr-only" id="announcer" aria-live="polite"></p>
 
+<!-- The Option modeler's page skeleton, parked here (hidden) until the Calculators screen opens its Options tab.
+     It is the website's option-modeler page body (ids and classes unchanged), so the website's modeler.js, copied
+     here byte for byte as js/options-modeler.js, wires it up. Nothing here is stored or sent. -->
+<div id="om-park" hidden>
+<div id="om-root" class="cs-options">
+    <p class="om-risk om-intro">Options can lose all the money paid for them. Selling an option can lose far more than the money received for it, and some positions have no limit on the loss. Nothing here is advice to buy, sell or use any option.</p>
+    <p class="om-risk om-intro"><strong>About this tool.</strong> You type every number. The tool does arithmetic on them. It does not look up prices or connect to any market, and it does not store or send the numbers you type.</p>
+
+    <div class="om-grid">
+      <div class="om-left">
+        <fieldset class="om-card om-picker" id="om-picker">
+          <legend class="om-title">Choose a strategy</legend>
+          <div class="om-pick-sum" id="om-picker-sum" hidden>
+            <p class="om-pick-name" id="om-picker-name"></p>
+            <button type="button" class="om-pill" id="om-picker-toggle" aria-expanded="false" aria-controls="om-picker-list">Change strategy</button>
+          </div>
+          <div id="om-picker-list"></div>
+        </fieldset>
+        <p class="om-note" id="om-name"></p>
+        <p class="om-learn" id="om-learn"></p>
+        <div class="om-card om-inputs" id="om-inputs"></div>
+      </div>
+
+      <div class="om-right">
+        <div class="om-card om-errbox" id="om-errbox" role="alert" hidden>
+          <h3 class="om-title">Check these numbers</h3>
+          <p class="om-errtext" id="om-errtext"></p>
+        </div>
+        <p class="om-empty om-card" id="om-empty">Choose a strategy to see its payoff at expiry.</p>
+        <div id="om-chartwrap" hidden>
+          <figure class="om-card om-chart-card" id="om-chart-card">
+            <div class="om-chart" id="om-chart" tabindex="0" role="group" aria-label="Chart of the total at expiry" aria-describedby="om-alt om-readout"></div>
+            <p class="om-readout" id="om-readout" aria-live="polite"></p>
+            <figcaption class="om-fine" id="om-caption"></figcaption>
+            <p class="om-fine om-example-line">Every price, strike and premium here is a made-up example until you type your own. A profit or loss here is arithmetic on the numbers shown. It does not show what any real option has done or would do.</p>
+            <p class="om-fine" id="om-alt"></p>
+            <p class="om-w1">For education only, not financial advice.</p>
+          </figure>
+        </div>
+      </div>
+
+      <div class="om-resultscol" id="om-results" hidden>
+          <div class="om-card om-resultsblock">
+            <h3 class="om-title" id="om-results-title">Results at expiry</h3>
+            <div class="om-cards" id="om-cards"></div>
+            <p class="om-w1">For education only, not financial advice.</p>
+            <p class="om-note">Options can lose all the money paid for them. Selling an option can lose far more than the money received for it, and some positions have no limit on the loss. Nothing here is advice to buy, sell or use any option.</p>
+            <div id="om-notes"></div>
+            <p class="om-note">If you type numbers you have found elsewhere, the result is only as good as those numbers. Prices in a real market can change, and a typed premium may not be available.</p>
+            <details class="om-more om-table">
+              <summary>Show the numbers behind the graph</summary>
+              <p class="om-fine" id="om-table-cap"></p>
+              <div class="table-wrap" tabindex="0" role="region" aria-label="Numbers behind the graph">
+                <table class="live-table">
+                  <thead><tr><th scope="col">Price at expiry (per share)</th><th scope="col">Total for the whole position</th></tr></thead>
+                  <tbody id="om-rows"></tbody>
+                </table>
+              </div>
+              <p class="om-w1">For education only, not financial advice.</p>
+            </details>
+          </div>
+      </div>
+    </div>
+
+    <div class="om-boxes" id="om-boxes" hidden>
+      <section class="om-card om-side" aria-labelledby="om-b1">
+        <h3 class="om-title" id="om-b1">What this position is</h3>
+        <div id="om-box"></div>
+      </section>
+      <section class="om-card om-side" aria-labelledby="om-b2">
+        <details class="om-more">
+          <summary><h3 class="om-title" id="om-b2">What can go wrong</h3></summary>
+          <ol class="om-list" id="om-wrong"></ol>
+        </details>
+      </section>
+      <section class="om-card om-side" aria-labelledby="om-b3">
+        <details class="om-more">
+          <summary><h3 class="om-title" id="om-b3">Key terms</h3></summary>
+          <ul class="om-list">
+            <li>Option: a contract giving the buyer a right, not a duty, to buy (a call) or sell (a put) shares at a set price by a set date.</li>
+            <li>Call: the right, but not the duty, to buy shares at the strike price by the expiry date.</li>
+            <li>Put: the right, but not the duty, to sell shares at the strike price by the expiry date.</li>
+            <li>Long: bought. The buyer pays the premium. Short: sold, also called written. The seller receives the premium and takes on the duty if the buyer uses the right.</li>
+            <li>Strike: the set price in the contract. Premium: the price of the option, quoted per share. Expiry: the last day the option exists.</li>
+            <li>Contract: a standard contract is usually for 100 shares. For example, a made-up premium of $3.00 per share is $300.00 for one standard contract.</li>
+            <li>In the money: a call with the share price above its strike, or a put with the share price below. At the money: the share price equals the strike. Out of the money: the reverse of in the money. In the money is not the same as a profit: the premium paid comes off.</li>
+            <li>Break-even: the price at expiry where the position's profit or loss is exactly $0.00.</li>
+            <li>Net debit and net credit: the money paid, or received, in total when all the legs are opened.</li>
+            <li>Payoff at expiry: what the options pay, or cost, on the last day, from the price on that day.</li>
+          </ul>
+        </details>
+      </section>
+    </div>
+
+    <div class="om-card om-fullnotice">
+      <details class="om-more">
+        <summary>More about this tool</summary>
+        <p class="om-note">About this tool. The option modeler works out what a position typed by you would pay at expiry. It uses only the numbers you type and the simplifications listed under "What can go wrong". It does not know what any option costs, whether a price will rise or fall, or which positions are available in any market. The calculation runs in your browser; the numbers you type are not stored, saved, logged or sent anywhere by this tool. The results are illustrations of arithmetic. They do not show what any real option has done or would do. Options can lose all the money paid for them, and selling an option can lose far more than the money received for it. A result is arithmetic on the numbers typed and may not match a real position. We do not give financial advice, and nothing on this page is advice to buy, sell or use any option. This tool is also not investment advice, tax advice or legal advice. This tool sells nothing. Apart from pages of Stepwell Financial's website (stepwellfinancial.com), which open in a new tab, it links to nothing.</p>
+      </details>
+    </div>
+</div>
+</div>
+
 <script src="js/boot.js"></script>
 <script src="js/data.js"></script>
 <script src="js/data-ext/eng-a.js"></script>
@@ -115,6 +221,14 @@
 <!-- The compound interest calculator's maths and chart layout, from the calculator website, unchanged -->
 <script src="js/calc-site.js"></script>
 <script src="js/chart-axis.js"></script>
+<!-- The Option modeler: the website's engine and page code, unchanged (byte for byte). Order matters: the page code
+     starts itself when it loads and needs the skeleton above and OPTIONS_MULTI, which needs ITEM_ENGINE. -->
+<script src="js/options.js"></script>
+<script src="js/options-multi.js"></script>
+<script src="js/options-modeler.js"></script>
+<!-- The Options lessons: the website's learn pages as data (made by a read-only converter, never edited by hand) and the code that draws them -->
+<script src="js/options-learn-data.js"></script>
+<script src="js/options-learn.js"></script>
 <!-- The loan amortization calculator's maths: pure, no page access -->
 <script src="js/amortize.js"></script>
 <script src="js/store/schema.js"></script>
